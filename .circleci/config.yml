@@ -1,0 +1,39 @@
+version: 2
+
+jobs:
+  build:
+    machine:
+      docker_layer_caching: false
+    context: twine_context
+    steps:
+      - checkout
+      - run: docker build --rm=false -t avro2py .
+      - run: docker-compose run tests
+      - run: docker-compose run pylint
+      - run: docker-compose run mypy
+#      - run: docker-compose run -e CLOUDREPO_USERNAME=$TWINE_USERNAME -e CLOUDREPO_PASSWORD=$TWINE_PASSWORD check-version
+  deploy:
+    machine:
+      docker_layer_caching: false
+    steps:
+      - checkout
+      - run:
+          name: Upload to pypi
+          command: |
+            pyenv install 3.6.3
+            pyenv global 3.6.3
+            pip install twine
+            python setup.py sdist
+            twine upload --non-interactive --verbose dist/*
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          context: twine_context
+          filters:
+            branches:
+              only: master

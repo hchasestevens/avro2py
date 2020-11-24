@@ -1,0 +1,1 @@
+"""`marketprice.messages.historical` namespace."""

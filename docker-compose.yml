@@ -1,0 +1,43 @@
+version: '3.2'
+
+services:
+  bash: &shared-base
+    image: teikametrics/avro2py:latest
+    volumes: &shared-volumes
+      - type: bind
+        source: .
+        target: /code
+        read_only: true
+    working_dir: /code
+    build: .
+    command: "bash"
+  tests:
+    <<: *shared-base
+    entrypoint: pytest tests
+    command: []
+  pylint:
+    <<: *shared-base
+    command: >
+      bash -c "
+      echo 'Running pylint...'
+      && pylint --disable=R,C,W --score=n avro2py/
+      && echo -e '\033[92mLinting succeeded.\033[0m'
+      "
+  mypy:
+    <<: *shared-base
+    command: >
+      bash -c "
+      echo 'Running mypy...'
+      && mypy --no-implicit-optional --ignore-missing-imports avro2py/
+      && echo -e '\033[92mLinting succeeded.\033[0m'c
+      "
+  check-version:
+    <<: *shared-base
+    command: >
+      bash -c "
+      echo 'Running check-version...'
+      && NEW_VERSION=$$(python setup.py --version)
+      && pip install requests
+      && python bin/check_version.py $$CLOUDREPO_USERNAME $$CLOUDREPO_PASSWORD $$NEW_VERSION
+      && echo -e '\033[92mLinting succeeded.\033[0m'c
+      "
