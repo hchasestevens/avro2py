@@ -2,6 +2,7 @@
 import argparse
 import json
 import sys
+import traceback
 
 from avro2py.avro_types import parse_into_types
 from avro2py.codegen import populate_namespaces
@@ -26,6 +27,7 @@ def generate_code(schema_paths) -> int:
     parsed_schemas = [parse_into_types(schema) for schema in schemas]
     namespaces = populate_namespaces(parsed_schemas)
     for path, module_contents in sorted(render_modules(namespaces).items()):
+        print("Rendering:", path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open('w') as f:
             f.write(module_contents)
@@ -38,7 +40,8 @@ def main():
     args = PARSER.parse_args()
     try:
         exit_code = generate_code(schema_paths=args.schemas)
-    except Exception:
+    except Exception as e:
+        print(traceback.format_exc())
         exit_code = 1
     sys.exit(exit_code)
 

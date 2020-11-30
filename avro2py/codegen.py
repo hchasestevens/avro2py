@@ -166,7 +166,7 @@ def record_to_class(record: Record) -> ResolvedClassResult:
 
 def render_enum_name(symbol_name: str) -> ast.Name:
     """Render enum symbols into Pythonic equivalents."""
-    formatted_name = re.sub('([A-Z]+)', r'_\1', symbol_name).upper()
+    formatted_name = re.sub('([A-Z]+)', r'_\1', symbol_name).upper().strip('_')
     return ast.Name(id=formatted_name)
 
 
@@ -274,10 +274,9 @@ def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, En
 
     if isinstance(field_type, Fixed):
         # http://avro.apache.org/docs/1.10.0/spec.html#Fixed
-        return ast.Name(id='bytes')  # TODO - validate?
+        return ast.Name(id='bytes')
 
     if isinstance(field_type, LogicalType):
-        # TODO - whole other jar of wax - punt for now
         import_module, type_ = LOGICAL_TYPE_MAPPINGS[field_type.logical_type]
         required_imports.append(
             ast.Import(names=[ast.alias(name=import_module, asname=None)])
@@ -360,7 +359,7 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
         else:
             import_node = None
             name = ast.Str(
-                s='.'.join(itertools.chain(remaining_to_components, (target_name,)))
+                s='.'.join(itertools.chain(remaining_to_components, target_name))
             )
 
         return name, import_node
@@ -405,8 +404,8 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
 
     def frontier_sorting_key(s):
         if s.namespace:
-            return len(s.namespace)
-        return 0
+            return len(s.namespace), s.namespace
+        return 0, ''
 
     frontier = sorted(schemas, key=frontier_sorting_key)
     while frontier:
