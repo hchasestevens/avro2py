@@ -1,6 +1,6 @@
 """Representation of avro schema types."""
 from contextlib import suppress
-from enum import Enum as _Enum
+from enum import Enum as _Enum, auto, unique
 from typing import NamedTuple, List, Union, Optional, Any, NewType, Dict
 
 
@@ -17,28 +17,30 @@ DefinedType = NewType('DefinedType', str)  # http://avro.apache.org/docs/1.10.0/
 
 
 @case_insensitive
+@unique
 class Primitives(_Enum):
     """http://avro.apache.org/docs/1.10.0/spec.html#schema_primitive"""
-    NULL = 'None'
-    BOOLEAN = 'bool'
-    INT = 'int'
-    LONG = 'int'
-    FLOAT = 'float'
-    DOUBLE = 'float'
-    BYTES = 'bytes'
-    STRING = 'str'
+    NULL = auto()
+    BOOLEAN = auto()
+    INT = auto()
+    LONG = auto()
+    FLOAT = auto()
+    DOUBLE = auto()
+    BYTES = auto()
+    STRING = auto()
 
 
 @case_insensitive
+@unique
 class LogicalTypes(_Enum):
-    DECIMAL = 'decimal', 'decimal.Decimal'
-    DATE = 'datetime', 'datetime.date'
-    TIME_MILLIS = 'datetime', 'datetime.time'
-    TIME_MICROS = 'datetime', 'datetime.time'
-    TIMESTAMP_MILLIS = 'datetime', 'datetime.datetime'
-    TIMESTAMP_MICROS = 'datetime', 'datetime.datetime'
-    DURATION = 'datetime', 'datetime.timedelta'
-    UUID = 'uuid', 'uuid.UUID'
+    DECIMAL = auto()
+    DATE = auto()
+    TIME_MILLIS = auto()
+    TIME_MICROS = auto()
+    TIMESTAMP_MILLIS = auto()
+    TIMESTAMP_MICROS = auto()
+    DURATION = auto()
+    UUID = auto()
 
 
 class LogicalType(NamedTuple):
@@ -98,6 +100,7 @@ class Fixed(NamedTuple):
 
 def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace: Optional[str] = None) \
         -> Union[Primitives, DefinedType, List, LogicalType, Fixed, Enum, Array, Map, Record]:
+    """Parse JSON-represented avro schema into internal representation."""
     if isinstance(schema, str):
         with suppress(KeyError):
             return Primitives.get(schema)

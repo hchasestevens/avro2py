@@ -12,6 +12,7 @@ PARSER.add_argument('schemas', nargs='+', help='Paths to AVSC schemas to generat
 
 
 def generate_code(schema_paths) -> int:
+    """Generate code, writing to file."""
     schemas = []
     for schema_path in schema_paths:
         with open(schema_path) as f:

@@ -11,7 +11,6 @@ jobs:
       - run: docker-compose run tests
       - run: docker-compose run pylint
       - run: docker-compose run mypy
-#      - run: docker-compose run -e CLOUDREPO_USERNAME=$TWINE_USERNAME -e CLOUDREPO_PASSWORD=$TWINE_PASSWORD check-version
   deploy:
     machine:
       docker_layer_caching: false
@@ -33,7 +32,6 @@ workflows:
       - deploy:
           requires:
             - build
-          context: twine_context
           filters:
             branches:
               only: master

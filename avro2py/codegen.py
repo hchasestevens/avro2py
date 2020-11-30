@@ -3,12 +3,10 @@
 import ast
 import itertools
 import re
-from _ast import AST
 from collections import defaultdict
 from contextlib import contextmanager
-from operator import methodcaller
 from textwrap import wrap
-from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict, Any
+from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -45,6 +43,7 @@ class ResolvedClassResult(NamedTuple):
 
 
 def consolidate_imports(imports: List[Union[ast.Import, ast.ImportFrom]]) -> List[ast.Expr]:
+    """Deduplicate and combine imports, leaving smallest possible set."""
     deduped_imports = [
         node
         for repr_, node in sorted({
@@ -84,6 +83,7 @@ def consolidate_imports(imports: List[Union[ast.Import, ast.ImportFrom]]) -> Lis
 
 
 def docstring_declaration(doc: str) -> ast.Expr:
+    """Sensibly format docstring into AST node."""
     formatted_doc = '\n'.join(wrap(
         doc,
         width=80,
@@ -117,6 +117,7 @@ def locate_new_class_definitions(field_type: Union[AvroPrimitives, DefinedType, 
 
 
 def record_to_class(record: Record) -> ResolvedClassResult:
+    """Convert Record into AST class definition."""
     imports = [
         ast.ImportFrom(  # from typing import NamedTuple
             module='typing',
@@ -164,11 +165,13 @@ def record_to_class(record: Record) -> ResolvedClassResult:
 
 
 def render_enum_name(symbol_name: str) -> ast.Name:
+    """Render enum symbols into Pythonic equivalents."""
     formatted_name = re.sub('([A-Z]+)', r'_\1', symbol_name).upper()
     return ast.Name(id=formatted_name)
 
 
 def enum_to_class(enum: Enum) -> ResolvedClassResult:
+    """Convert Enum into AST class definition."""
     enum_import = ast.Import(names=[ast.alias(name='enum', asname=None)])
     class_body = []
 
@@ -199,11 +202,13 @@ def enum_to_class(enum: Enum) -> ResolvedClassResult:
 
 
 def from_typing(name: str) -> ast.ImportFrom:
+    """Import from the typing module."""
     return ast.ImportFrom(module='typing', names=[ast.alias(name=name, asname=None)], level=0)
 
 
 def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, Enum, Array, Map, Fixed],
                        required_imports: List[Union[ast.Import, ast.ImportFrom]]) -> ast.AST:
+    """Resolve the requisite type annotation for a supplied field type."""
     if isinstance(field_type, Primitives):
         # http://avro.apache.org/docs/1.10.0/spec.html#schema_primitive
         return ast.Name(id=PRIMITIVE_TYPE_MAPPINGS[field_type])
@@ -300,6 +305,7 @@ NODE_CLASS_CONVERTERS = {
 
 
 class ModuleAwareNodeTransformer(ast.NodeTransformer):
+    """Base class for NodeTransformers which need module/global context."""
     def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
         super(ModuleAwareNodeTransformer, self).__init__()
         self.namespaces = namespaces
@@ -318,9 +324,15 @@ class ModuleAwareNodeTransformer(ast.NodeTransformer):
 
 
 class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
+    """Used to rewrite deferred type annotations within an AnnAssign node."""
+
     @staticmethod
     def bridge_namespaces(from_namespace: List[str], to_namespace: List[str], target_name: List[str]) \
             -> Tuple[ast.Str, Optional[ast.ImportFrom]]:
+        """
+        Given two module namespaces and a desired annotation, find the path to
+        import the required object from its module.
+        """
         paired_components = itertools.zip_longest(from_namespace, to_namespace)
         for from_component, to_component in paired_components:
             if from_component != to_component:
@@ -376,16 +388,16 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
 
 
 class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
+    """Used to rewrite type deferred type annotations, from the module-level."""
+
     def visit_AnnAssign(self, node: ast.AnnAssign) -> ast.AnnAssign:
-        print()
-        print(self.module_namespace)
-        print(ast.dump(node))
         transformer = RewriteCrossReferenceStrings(namespaces=self.namespaces)
         with transformer.rewriter(module_namespace=self.module_namespace, module_imports=self.module_imports) as rewriter:
-            return transformer.visit(node)
+            return rewriter.visit(node)
 
 
-def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:  # todo - check input type
+def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
+    """Convert internal Record representations into renderable AST module nodes."""
     namespace_nodes = defaultdict(lambda: Namespace(
         node=ast.Module(body=[]),
         imports=[],

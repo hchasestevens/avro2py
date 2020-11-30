@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   bash: &shared-base
-    image: teikametrics/avro2py:latest
+    image:  avro2py:latest
     volumes: &shared-volumes
       - type: bind
         source: .

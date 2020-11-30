@@ -15,7 +15,8 @@ BLACK_MODE = Mode(
 )
 
 
-def black_format(s):
+def black_format(s: str):
+    """Perform code formatting on unformatted source code."""
     return format_file_contents(
         s,
         fast=False,
@@ -24,6 +25,7 @@ def black_format(s):
 
 
 def render_module(module: ast.Module) -> str:
+    """Transform AST module into source code."""
     source = astor.to_source(module)
     with suppress(NothingChanged):
         source = black_format(source)
@@ -31,11 +33,13 @@ def render_module(module: ast.Module) -> str:
 
 
 def render_ipython(node):
+    """Convenience method for rendering AST node in IPython environment."""
     from IPython.display import display, Code
     display(Code(render_module(node), language='python'))
 
 
 def render_modules(modules: Iterable[Tuple[str, ast.Module]]) -> Dict[Path, str]:
+    """Render populated modules into requisite file contents, paired with paths."""
     rendered = dict()
     discovered_directories = set()
     for module_name, module_node in modules:
