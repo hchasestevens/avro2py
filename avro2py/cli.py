@@ -40,7 +40,7 @@ def main():
     args = PARSER.parse_args()
     try:
         exit_code = generate_code(schema_paths=args.schemas)
-    except Exception as e:
+    except:
         print(traceback.format_exc())
         exit_code = 1
     sys.exit(exit_code)

@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from textwrap import wrap
-from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
+from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict, Callable, Iterable
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -36,10 +36,25 @@ LOGICAL_TYPE_MAPPINGS = {
 }
 
 
+NODE_CLASS_CONVERTERS = {
+}
+
+
+def node_converter(fn):
+    avro_type, = {v for k, v in fn.__annotations__.items() if k != 'return'}
+    NODE_CLASS_CONVERTERS[avro_type] = fn
+    return fn
+
+
 class ResolvedClassResult(NamedTuple):
     resolved_class: ast.ClassDef
     imports: List[Union[ast.Import, ast.ImportFrom]]
     new_frontier: List[Union[Record, Enum]]
+
+
+class Namespace(NamedTuple):
+    node: ast.AST  # could be protocol - needs `.body`
+    imports: List[Union[ast.Import, ast.ImportFrom]]
 
 
 def consolidate_imports(imports: List[Union[ast.Import, ast.ImportFrom]]) -> List[ast.Expr]:
@@ -116,6 +131,7 @@ def locate_new_class_definitions(field_type: Union[AvroPrimitives, DefinedType, 
     return  # not a nested type
 
 
+@node_converter
 def record_to_class(record: Record) -> ResolvedClassResult:
     """Convert Record into AST class definition."""
     imports = [
@@ -170,6 +186,7 @@ def render_enum_name(symbol_name: str) -> ast.Name:
     return ast.Name(id=formatted_name)
 
 
+@node_converter
 def enum_to_class(enum: Enum) -> ResolvedClassResult:
     """Convert Enum into AST class definition."""
     enum_import = ast.Import(names=[ast.alias(name='enum', asname=None)])
@@ -292,17 +309,6 @@ def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, En
     raise ValueError(f"Didn't know how to handle field type `{field_type}`")
 
 
-class Namespace(NamedTuple):
-    node: ast.AST  # could be protocol - needs `.body`
-    imports: List[Union[ast.Import, ast.ImportFrom]]
-
-
-NODE_CLASS_CONVERTERS = {
-    Record: record_to_class,
-    Enum: enum_to_class,
-}
-
-
 class ModuleAwareNodeTransformer(ast.NodeTransformer):
     """Base class for NodeTransformers which need module/global context."""
     def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
@@ -395,6 +401,15 @@ class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
             return rewriter.visit(node)
 
 
+def unique(iterable: Iterable, by: Callable = lambda x: x):
+    seen = set()
+    for item in iterable:
+        key = by(item)
+        if key not in seen:
+            yield item
+            seen.add(key)
+
+
 def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
     """Convert internal Record representations into renderable AST module nodes."""
     namespace_nodes = defaultdict(lambda: Namespace(
@@ -403,41 +418,108 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
     ))
 
     def frontier_sorting_key(s):
-        if s.namespace:
-            return len(s.namespace), s.namespace
-        return 0, ''
+        return s.namespace not in namespace_nodes, s.namespace
 
     frontier = sorted(schemas, key=frontier_sorting_key)
     while frontier:
         schema = frontier.pop()
-        namespace = namespace_nodes[schema.namespace]
+        schema_fully_qualified_name = f'{schema.namespace}.{schema.name}'
+        if schema_fully_qualified_name in namespace_nodes:
+            continue
+        print('Processing:', schema.namespace, '\t', schema.name)  # TODO - REMOVE/VERBOSE ONLY
+
+        parent_namespace = namespace_nodes[schema.namespace]
 
         converter = NODE_CLASS_CONVERTERS.get(schema.__class__)
         if converter is None:
             raise ValueError(f"Unknown schema type: `{type(schema)}` (in schema `{schema}`)")
 
         result = converter(schema)
-        namespace.node.body.append(result.resolved_class)
-        namespace.imports.extend(result.imports)
+        resolved_class = result.resolved_class
+        parent_namespace.node.body.append(resolved_class)
+        parent_namespace.imports.extend(result.imports)
         frontier.extend(result.new_frontier)
-        namespace_nodes[f'{schema.namespace}.{schema.name}'] = Namespace(
-            node=result.resolved_class,
-            imports=namespace.imports
+        namespace_nodes[schema_fully_qualified_name] = Namespace(
+            node=resolved_class,
+            imports=parent_namespace.imports  # n.b. multiple pointers to same object
         )
 
         frontier = sorted(frontier, key=frontier_sorting_key)
 
+    # # dedupe definitions
+    # for namespace_name, namespace in namespace_nodes.items():
+    #     namespace.node.body = list(unique(namespace.node.body, by=ast.dump))
+
+    # Sometimes there are implicit namespaces that are children of classes, and
+    # hence themselves need to be classes - but have been instantiated as
+    # modules. The below loop fixes this.
+    changed = True
+    while changed:
+        changed = False
+        modules_to_convert = [
+            (namespace_name, namespace)
+            for namespace_name, namespace in namespace_nodes.items()
+            if isinstance(namespace.node, ast.Module)
+            if any(
+                parent_namespace in namespace_nodes
+                and isinstance(namespace_nodes[parent_namespace].node, ast.ClassDef)
+                for parent_namespace in itertools.accumulate(
+                    namespace_name.split('.')[:-1],
+                    func='{}.{}'.format
+                )
+            )
+        ]
+        if modules_to_convert:
+            changed = True
+        for namespace_name, namespace in modules_to_convert:
+            print("CONVERTING:", namespace_name)  # TODO - REMOVE? VERBOSE?
+            *parent_namespace_components, name = namespace_name.split('.')
+
+            new_class = ast.ClassDef(
+                name=name,
+                bases=[],
+                keywords=[],
+                body=namespace.node.body,
+                decorator_list=[]
+            )
+
+            parent_namespace_name = '.'.join(parent_namespace_components)
+            if parent_namespace_name not in namespace_nodes:
+                namespace_nodes[parent_namespace_name] = Namespace(
+                    node=ast.Module(body=[]),
+                    imports=namespace.imports,  # need this to be the same referent, so can't rely on defaultdict
+                )
+            parent_namespace = namespace_nodes[parent_namespace_name]
+            parent_namespace.node.body.append(new_class)
+
+            # TODO - REMOVE (DEBUG)
+            # TODO - apparently this node isn't the reference held by the containing module; but shouldn't it be? troubling. L433-43X
+            # TODO - I'm pretty sure now it's because of the dedupe, we actually want the _last_ found value, not the first
+            # TODO - or to proactively dedupe instead of post-hoc
+            import astor; print(astor.to_source(parent_namespace.node))
+
+            namespace_nodes[namespace_name] = Namespace(
+                node=new_class,
+                imports=namespace.imports,
+            )
+
     node_transformer = RewriteCrossReferenceAnnotations(namespaces=namespace_nodes)
-    for namespace, (node, imports) in namespace_nodes.items():
-        if not isinstance(node, ast.Module):
+    for namespace_name, namespace in namespace_nodes.items():
+        if not isinstance(namespace.node, ast.Module):
             continue
 
-        with node_transformer.rewriter(module_namespace=namespace, module_imports=imports) as rewriter:
-            node = rewriter.visit(node)
+        print("Finishing:", namespace_name)  # todo - REMOVE
+        if namespace_name == 'teikametrics.messages.targeting_recommendation_engine':
+            import astor; print(astor.to_source(namespace.node))
+
+        # transform fully-qualified internal cross-reference forward annotations
+        # to relative (resolvable) forward annotations, adding any necessary imports
+        with node_transformer.rewriter(module_namespace=namespace_name, module_imports=namespace.imports) as rewriter:
+            node = rewriter.visit(namespace.node)
 
         module_docstring = ast.Expr(value=ast.Str(
-            s=f'Schema definitions for `{namespace}` namespace. Generated by avro2py v.0.0.1.'
+            s=f'Schema definitions for `{namespace_name}` namespace. Generated by avro2py v.0.0.1.'
         ))
-        yield namespace, ast.Module(
-            body=[module_docstring] + consolidate_imports(imports) + node.body,
+        yield namespace_name, ast.Module(
+            body=[module_docstring] + consolidate_imports(namespace.imports) + node.body,
         )
