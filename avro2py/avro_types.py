@@ -5,7 +5,10 @@ from typing import NamedTuple, List, Union, Optional, Any, NewType, Dict
 
 
 def case_insensitive(cls):
-    """Add case-insensitive .get method to Enum."""
+    """
+    Add case-insensitive .get method to Enum. This is so we can conveniently
+    resolve names like `time-micros` in the avro schema into their enum member.
+    """
     @classmethod
     def get(cls_, value):
         return cls_[value.upper().replace('-', '_')]
