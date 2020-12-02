@@ -426,7 +426,6 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
         schema_fully_qualified_name = f'{schema.namespace}.{schema.name}'
         if schema_fully_qualified_name in namespace_nodes:
             continue
-        print('Processing:', schema.namespace, '\t', schema.name)  # TODO - REMOVE/VERBOSE ONLY
 
         parent_namespace = namespace_nodes[schema.namespace]
 
@@ -446,16 +445,10 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
 
         frontier = sorted(frontier, key=frontier_sorting_key)
 
-    # # dedupe definitions
-    # for namespace_name, namespace in namespace_nodes.items():
-    #     namespace.node.body = list(unique(namespace.node.body, by=ast.dump))
-
     # Sometimes there are implicit namespaces that are children of classes, and
     # hence themselves need to be classes - but have been instantiated as
     # modules. The below loop fixes this.
-    changed = True
-    while changed:
-        changed = False
+    while True:
         modules_to_convert = [
             (namespace_name, namespace)
             for namespace_name, namespace in namespace_nodes.items()
@@ -469,10 +462,10 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
                 )
             )
         ]
-        if modules_to_convert:
-            changed = True
+        if not modules_to_convert:
+            break
+
         for namespace_name, namespace in modules_to_convert:
-            print("CONVERTING:", namespace_name)  # TODO - REMOVE? VERBOSE?
             *parent_namespace_components, name = namespace_name.split('.')
 
             new_class = ast.ClassDef(
@@ -492,12 +485,6 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
             parent_namespace = namespace_nodes[parent_namespace_name]
             parent_namespace.node.body.append(new_class)
 
-            # TODO - REMOVE (DEBUG)
-            # TODO - apparently this node isn't the reference held by the containing module; but shouldn't it be? troubling. L433-43X
-            # TODO - I'm pretty sure now it's because of the dedupe, we actually want the _last_ found value, not the first
-            # TODO - or to proactively dedupe instead of post-hoc
-            import astor; print(astor.to_source(parent_namespace.node))
-
             namespace_nodes[namespace_name] = Namespace(
                 node=new_class,
                 imports=namespace.imports,
@@ -508,7 +495,6 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
         if not isinstance(namespace.node, ast.Module):
             continue
 
-        print("Finishing:", namespace_name)  # todo - REMOVE
         if namespace_name == 'teikametrics.messages.targeting_recommendation_engine':
             import astor; print(astor.to_source(namespace.node))
 
