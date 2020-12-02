@@ -6,7 +6,7 @@ from typing import NamedTuple
 
 class NileProductCogsEvent(NamedTuple):
     """
-    MPrice-published COGS Event for a Nile product:
+    MPrice-published COGS Event for an Nile product:
     mprice/cogs/v0/nile-product/event
     """
 

@@ -108,3 +108,4 @@ venv.bak/
 
 # jupyter notebook scratch files
 *.ipynb
+example/sub.py

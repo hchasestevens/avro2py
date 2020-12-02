@@ -5,6 +5,60 @@ import enum
 from typing import List, NamedTuple, Union
 
 
+class TargetingRecommendationToEnricher(NamedTuple):
+    """
+    Provides required information to the TRE serving layer:
+    mprice/v0/targeting-recommendation-to-enricher
+    """
+
+    product: "TargetingRecommendationProduct"
+    entityType: "TargetingRecommendationToEnricher.EntityType"
+    targetingClause: str
+    sentAt: datetime.datetime
+
+    @enum.unique
+    class EntityType(enum.Enum):
+        """
+        The entity type for the targeting clause:
+        """
+
+        AD_GROUP = "AdGroup"
+        SBKEYWORD = "SBKeyword"
+        SPKEYWORD = "SPKeyword"
+        SPTARGET = "SPTarget"
+        WALLYWORLD_AD_ITEM = "WallyworldAdItem"
+        WALLYWORLD_KEYWORD = "WallyworldKeyword"
+
+
+class TargetingRecommendationProduct(NamedTuple):
+    """
+    product that requires a targeting recommendation:
+    mprice/v0/targeting-recommendation-product
+    """
+
+    productIdentifier: Union[
+        "TargetingRecommendationProduct.ProductIdentifier.Nile1pProduct",
+        "TargetingRecommendationProduct.ProductIdentifier.NileProduct",
+        "TargetingRecommendationProduct.ProductIdentifier.WallyworldProduct",
+    ]
+    sentAt: datetime.datetime
+
+    class ProductIdentifier:
+        class WallyworldProduct(NamedTuple):
+            advertiserId: int
+            itemId: str
+
+        class NileProduct(NamedTuple):
+            sellerId: str
+            marketplaceId: str
+            sku: str
+
+        class Nile1pProduct(NamedTuple):
+            vendorId: str
+            marketplaceId: str
+            nsin: str
+
+
 class TargetingRecommendation(NamedTuple):
     """
     targeting recommendation engine decisions: mprice/v0/targeting-recommendation
