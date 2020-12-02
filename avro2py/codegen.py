@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from textwrap import wrap
-from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict, Callable, Iterable
+from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -399,15 +399,6 @@ class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
         transformer = RewriteCrossReferenceStrings(namespaces=self.namespaces)
         with transformer.rewriter(module_namespace=self.module_namespace, module_imports=self.module_imports) as rewriter:
             return rewriter.visit(node)
-
-
-def unique(iterable: Iterable, by: Callable = lambda x: x):
-    seen = set()
-    for item in iterable:
-        key = by(item)
-        if key not in seen:
-            yield item
-            seen.add(key)
 
 
 def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
