@@ -1,0 +1,1719 @@
+[
+  {
+    "type": "record",
+    "name": "KeywordUpdateRequest",
+    "namespace": "marketprice.messages.neo.wallyworld",
+    "doc": "Keyword update request: wallyworld-sponsored-products-api/v1/request-update/keyword",
+    "fields": [
+      {
+        "name": "keywordId",
+        "type": "long"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 12,
+          "scale": 4
+        }
+      },
+      {
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "submissionId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "publishedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "expiresAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "AdItemUpdateRequest",
+    "namespace": "marketprice.messages.neo.wallyworld",
+    "doc": "AdItem update request: wallyworld-sponsored-products-api/v1/request-update/ad-item",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "itemId",
+        "type": "string"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 12,
+          "scale": 4
+        }
+      },
+      {
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "name": "submissionId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "publishedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "expiresAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "KeywordUpdateResponse",
+    "namespace": "marketprice.messages.neo.wallyworld",
+    "doc": "Response for a KeywordUpdateRequest message: wallyworld-sponsored-products-api/v1/response-update/keyword",
+    "fields": [
+      {
+        "name": "code",
+        "type": {
+          "type": "enum",
+          "name": "ResponseCode",
+          "namespace": "marketprice.messages.neo.wallyworld.KeywordUpdateResponse",
+          "doc": "code returned by Wallyworld API",
+          "symbols": [
+            "success",
+            "failure"
+          ]
+        }
+      },
+      {
+        "name": "errorDetails",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 12,
+          "scale": 4
+        }
+      },
+      {
+        "name": "submissionId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "receivedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "AdItemUpdateResponse",
+    "namespace": "marketprice.messages.neo.wallyworld",
+    "doc": "Response for an AdItemUpdateRequest message: wallyworld-sponsored-products-api/v1/response-update/ad-item",
+    "fields": [
+      {
+        "name": "code",
+        "type": {
+          "type": "enum",
+          "name": "ResponseCode",
+          "namespace": "marketprice.messages.neo.wallyworld.AdItemUpdateResponse",
+          "doc": "code returned by Wallyworld API",
+          "symbols": [
+            "success",
+            "failure"
+          ]
+        }
+      },
+      {
+        "name": "errorDetails",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 12,
+          "scale": 4
+        }
+      },
+      {
+        "name": "submissionId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "receivedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "GetMatchingProductForId",
+    "namespace": "marketprice.messages.nile.mws",
+    "doc": "GetMatchingProductForId Record: nile-mws-api/2009-01-01/parsed/get-matching-product-for-id",
+    "fields": [
+      {
+        "name": "nsin",
+        "type": "string"
+      },
+      {
+        "name": "marketplaceId",
+        "type": "string"
+      },
+      {
+        "name": "parent",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "children",
+        "type": {
+          "type": "array",
+          "items": "string"
+        }
+      },
+      {
+        "name": "image",
+        "type": [
+          "null",
+          {
+            "type": "record",
+            "name": "ImageData",
+            "namespace": "marketprice.messages.nile.mws.GetMatchingProductForId",
+            "fields": [
+              {
+                "name": "url",
+                "type": "string"
+              },
+              {
+                "name": "heightPx",
+                "type": "int"
+              },
+              {
+                "name": "widthPx",
+                "type": "int"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "salesRank",
+        "type": {
+          "type": "map",
+          "values": "int"
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "receivedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "title",
+        "type": [
+          "null",
+          "string"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "FbaProductFeeEstimate",
+    "namespace": "marketprice.messages.nile.mws",
+    "doc": "Mws Fba Product Fee estimate: MpDataType(nile-mws-api/2009-01-01/parsed/fba-estimated-fees)",
+    "fields": [
+      {
+        "name": "sellerId",
+        "type": "string"
+      },
+      {
+        "name": "marketplaceId",
+        "type": "string"
+      },
+      {
+        "name": "sku",
+        "type": "string"
+      },
+      {
+        "name": "currency",
+        "type": "string"
+      },
+      {
+        "name": "priceToEstimateAt",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "maybeEstimatedReferralFee",
+        "type": [
+          "null",
+          {
+            "type": "bytes",
+            "logicalType": "decimal",
+            "precision": 21,
+            "scale": 2
+          }
+        ]
+      },
+      {
+        "name": "maybeEstimatedVariableClosingFee",
+        "type": [
+          "null",
+          {
+            "type": "bytes",
+            "logicalType": "decimal",
+            "precision": 21,
+            "scale": 2
+          }
+        ]
+      },
+      {
+        "name": "maybeEstimatedFulfillmentFee",
+        "type": [
+          "null",
+          {
+            "type": "bytes",
+            "logicalType": "decimal",
+            "precision": 21,
+            "scale": 2
+          }
+        ]
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "receivedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "ProductDemandEstimate",
+    "namespace": "marketprice.messages.bch",
+    "doc": "BCH Demand Forecast response record: MpDataType(mprice/bch/x/demand-forecast/deciles)",
+    "fields": [
+      {
+        "name": "channel",
+        "type": "string"
+      },
+      {
+        "name": "sellerId",
+        "type": "string"
+      },
+      {
+        "name": "marketplaceId",
+        "type": "string"
+      },
+      {
+        "name": "sku",
+        "type": "string"
+      },
+      {
+        "name": "forecastDate",
+        "type": {
+          "type": "int",
+          "logicalType": "date"
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "int",
+          "logicalType": "date"
+        }
+      },
+      {
+        "name": "percentile",
+        "type": "string"
+      },
+      {
+        "name": "estimate",
+        "type": "int"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "ProductTrigger",
+    "namespace": "marketprice.messages.bch",
+    "doc": "BCH Product for Demand Forecast processing: MpDataType(mprice/bch/x/demand-forecast/product-trigger)",
+    "fields": [
+      {
+        "name": "channel",
+        "type": "string"
+      },
+      {
+        "name": "sellerId",
+        "type": "string"
+      },
+      {
+        "name": "marketplaceId",
+        "type": "string"
+      },
+      {
+        "name": "sku",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "ExampleModelWithMpContentType",
+    "namespace": "marketprice.messages.example",
+    "doc": "Simple example model for testing MpContentType (not used outside of tests)",
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "contentType",
+        "type": "string"
+      },
+      {
+        "name": "separateMpDataType",
+        "type": "string"
+      },
+      {
+        "name": "separateMpContentFormat",
+        "type": "string"
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "SimpleExampleMessage",
+    "namespace": "marketprice.messages.example",
+    "doc": "Simple example message format, for use in examples and testing",
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "dataMap",
+        "type": {
+          "type": "map",
+          "values": "string"
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "SimpleExampleDecimalMessage",
+    "namespace": "marketprice.messages.example",
+    "doc": "Simple example message format with decimals, for use in examples and testing",
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "decimal21P2S",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "decimal21P6S",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 6
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "SimpleExampleMessageStringData",
+    "namespace": "marketprice.messages.example",
+    "doc": "Simple example message format with string data, for use in examples and testing",
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "data",
+        "type": "string"
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "ExampleAvroModel",
+    "namespace": "marketprice.messages.example",
+    "doc": "Example Avro Model",
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "encryptedData",
+        "type": "string"
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "date",
+        "type": {
+          "type": "int",
+          "logicalType": "date"
+        }
+      },
+      {
+        "name": "maybeInt",
+        "type": [
+          "null",
+          "int"
+        ]
+      },
+      {
+        "name": "decimal",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "maybeDecimal",
+        "type": [
+          "null",
+          {
+            "type": "bytes",
+            "logicalType": "decimal",
+            "precision": 21,
+            "scale": 2
+          }
+        ]
+      },
+      {
+        "name": "stringMap",
+        "type": {
+          "type": "map",
+          "values": "string"
+        }
+      },
+      {
+        "name": "sampleEnum",
+        "type": {
+          "type": "enum",
+          "name": "Cheese",
+          "namespace": "marketprice.messages.example.ExampleAvroModel",
+          "doc": "Example enum",
+          "symbols": [
+            "wensleydale",
+            "havarti",
+            "cheddar"
+          ]
+        }
+      },
+      {
+        "name": "sampleUnion",
+        "type": [
+          {
+            "type": "record",
+            "name": "RecordWithInt",
+            "namespace": "marketprice.messages.example.ExampleAvroModel",
+            "fields": [
+              {
+                "name": "id",
+                "type": {
+                  "type": "string",
+                  "logicalType": "uuid"
+                }
+              },
+              {
+                "name": "value",
+                "type": "int"
+              }
+            ]
+          },
+          {
+            "type": "record",
+            "name": "RecordWithString",
+            "namespace": "marketprice.messages.example.ExampleAvroModel",
+            "fields": [
+              {
+                "name": "id",
+                "type": {
+                  "type": "string",
+                  "logicalType": "uuid"
+                }
+              },
+              {
+                "name": "value",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sampleInner",
+        "type": {
+          "type": "record",
+          "name": "ExampleInnerModel",
+          "namespace": "marketprice.messages.example.ExampleAvroModel",
+          "doc": "Example Inner Model",
+          "fields": [
+            {
+              "name": "foo",
+              "type": "long"
+            },
+            {
+              "name": "bar",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Response",
+    "namespace": "marketprice.messages.wallyworld.marketplace.v3",
+    "doc": "Wallyworld Marketplace API Credentials: wallyworld-marketplace-api/v3/credentials/response",
+    "fields": [
+      {
+        "name": "mpAccountId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "submissionId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "name": "publishedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Credentials",
+    "namespace": "marketprice.messages.wallyworld.marketplace.v3",
+    "doc": "Wallyworld Marketplace API Credentials: wallyworld-marketplace-api/v3/credentials",
+    "fields": [
+      {
+        "name": "mpAccountId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "clientId",
+        "type": "string"
+      },
+      {
+        "name": "clientSecret",
+        "type": "string"
+      },
+      {
+        "name": "receivedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "submissionId",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      },
+      {
+        "name": "publishedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldAdItem",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Ad Item Snapshot for bidder: wallyworld-sponsored-products-api/entity/v1/parsed-bidder/ad-item",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "adItemId",
+        "type": "long"
+      },
+      {
+        "name": "itemId",
+        "type": "string"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 12,
+          "scale": 4
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldAdGroup",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Ad Group Snapshot for bidder: wallyworld-sponsored-products-api/entity/v1/parsed-bidder/ad-group",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldAdGroupReport",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Ad Group Report for bidder: wallyworld-sponsored-products-api/reports/v1/parsed-bidder/ad-group",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "date",
+        "type": {
+          "type": "int",
+          "logicalType": "date"
+        }
+      },
+      {
+        "name": "cost",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "sales",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "impressions",
+        "type": "int"
+      },
+      {
+        "name": "clicks",
+        "type": "int"
+      },
+      {
+        "name": "unitsOrdered",
+        "type": "int"
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldAdItemReport",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Ad Item Report for bidder: wallyworld-sponsored-products-api/reports/v1/parsed-bidder/ad-item",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "itemId",
+        "type": "string"
+      },
+      {
+        "name": "date",
+        "type": {
+          "type": "int",
+          "logicalType": "date"
+        }
+      },
+      {
+        "name": "cost",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "sales",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "impressions",
+        "type": "int"
+      },
+      {
+        "name": "clicks",
+        "type": "int"
+      },
+      {
+        "name": "unitsOrdered",
+        "type": "int"
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldKeywordReport",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Keyword Report for bidder: wallyworld-sponsored-products-api/reports/v1/parsed-bidder/keyword",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "keywordId",
+        "type": "long"
+      },
+      {
+        "name": "searchTerm",
+        "type": "string"
+      },
+      {
+        "name": "impressions",
+        "type": "int"
+      },
+      {
+        "name": "clicks",
+        "type": "int"
+      },
+      {
+        "name": "unitsOrdered",
+        "type": "int"
+      },
+      {
+        "name": "cost",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "sales",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "date",
+        "type": {
+          "type": "int",
+          "logicalType": "date"
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldCampaign",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Campaign Snapshot for bidder: wallyworld-sponsored-products-api/entity/v1/parsed-bidder/campaign",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "targetingType",
+        "type": "string"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldKeyword",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Keyword Snapshot for bidder: wallyworld-sponsored-products-api/entity/v1/parsed-bidder/keyword",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "keywordId",
+        "type": "long"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "matchType",
+        "type": "string"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 12,
+          "scale": 4
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "LongKey",
+    "namespace": "marketprice.messages.shark.keys",
+    "doc": "Model for a Kafka key consisting solely of a Long",
+    "fields": [
+      {
+        "name": "id",
+        "type": "long"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "StringKey",
+    "namespace": "marketprice.messages.shark.keys",
+    "doc": "Model for a Kafka key consisting solely of a String",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "UuidKey",
+    "namespace": "marketprice.messages.shark.keys",
+    "doc": "Model for a Kafka key consisting solely of a UUID",
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "IntKey",
+    "namespace": "marketprice.messages.shark.keys",
+    "doc": "Model for a Kafka key consisting solely of an Integer",
+    "fields": [
+      {
+        "name": "id",
+        "type": "int"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "S3DataAvailable",
+    "namespace": "marketprice.messages.historical.replay",
+    "doc": "Represents a DataAvailable event with data stored in S3 (inline bytes are not supported); otherwise comparable to DataAvailable.",
+    "fields": [
+      {
+        "name": "ownerId",
+        "type": "string"
+      },
+      {
+        "name": "s3FileDescriptor",
+        "type": {
+          "type": "record",
+          "name": "S3FileDescriptor",
+          "namespace": "marketprice.pubsub",
+          "fields": [
+            {
+              "name": "bucket",
+              "type": "string"
+            },
+            {
+              "name": "key",
+              "type": "string"
+            },
+            {
+              "name": "contentType",
+              "type": "string"
+            },
+            {
+              "name": "contentEncoding",
+              "type": "string"
+            },
+            {
+              "name": "metadata",
+              "type": {
+                "type": "map",
+                "values": "string"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "mpContentType",
+        "type": "string"
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "receivedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "requestMetadata",
+        "type": {
+          "type": "map",
+          "values": "string"
+        }
+      },
+      {
+        "name": "responseMetadata",
+        "type": {
+          "type": "map",
+          "values": "string"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "TargetingRecommendation",
+    "namespace": "marketprice.messages.targeting_recommendation_engine",
+    "doc": "targeting recommendation engine decisions: mprice/v0/targeting-recommendation",
+    "fields": [
+      {
+        "name": "profileId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "sku",
+        "type": "string"
+      },
+      {
+        "name": "bid",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "recommendationScore",
+        "type": {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 21,
+          "scale": 2
+        }
+      },
+      {
+        "name": "recommendedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "Recommendation",
+        "type": [
+          {
+            "type": "record",
+            "name": "Keyword",
+            "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendation",
+            "doc": "keyword description",
+            "fields": [
+              {
+                "name": "keywordText",
+                "type": "string"
+              },
+              {
+                "name": "matchType",
+                "type": {
+                  "type": "enum",
+                  "name": "KeywordMatchType",
+                  "symbols": [
+                    "exact",
+                    "phrase",
+                    "broad"
+                  ]
+                }
+              },
+              {
+                "name": "keywordState",
+                "type": {
+                  "type": "enum",
+                  "name": "KeywordState",
+                  "doc": "Possible states of a keyword",
+                  "symbols": [
+                    "enabled",
+                    "paused",
+                    "archived"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "record",
+            "name": "ProductAttributeTarget",
+            "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendation",
+            "doc": "PAT expression description",
+            "fields": [
+              {
+                "name": "expression",
+                "type": {
+                  "type": "array",
+                  "items": {
+                    "type": "record",
+                    "name": "Predicate",
+                    "doc": "Predicate of PAT expression for target recommendation",
+                    "fields": [
+                      {
+                        "name": "predicateType",
+                        "type": {
+                          "type": "enum",
+                          "name": "PredicateType",
+                          "doc": "Types of PAT expression predicate enum",
+                          "symbols": [
+                            "queryBroadMatches",
+                            "queryPhraseMatches",
+                            "queryExactMatches",
+                            "nsinCategorySameAs",
+                            "nsinBrandSameAs",
+                            "nsinPriceLessThan",
+                            "nsinPriceBetween",
+                            "nsinPriceGreaterThan",
+                            "nsinReviewRatingLessThan",
+                            "nsinReviewRatingBetween",
+                            "nsinReviewRatingGreaterThan",
+                            "nsinSameAs",
+                            "queryBroadRelMatches",
+                            "queryHighRelMatches",
+                            "nsinSubstituteRelated",
+                            "nsinAccessoryRelated",
+                            "nsinAgeRangeSameAs",
+                            "nsinGenreSameAs",
+                            "nsinIsPrimeShippingEligible"
+                          ]
+                        }
+                      },
+                      {
+                        "name": "value",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "expressionType",
+                "type": {
+                  "type": "enum",
+                  "name": "ExpressionType",
+                  "doc": "Possible types of an expression",
+                  "symbols": [
+                    "auto",
+                    "manual"
+                  ]
+                }
+              },
+              {
+                "name": "expressionState",
+                "type": "KeywordState"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "TargetingRecommendationProduct",
+    "namespace": "marketprice.messages.targeting_recommendation_engine",
+    "doc": "product that requires a targeting recommendation: mprice/v0/targeting-recommendation-product",
+    "fields": [
+      {
+        "name": "productIdentifier",
+        "type": [
+          {
+            "type": "record",
+            "name": "Nile1pProduct",
+            "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",
+            "fields": [
+              {
+                "name": "vendorId",
+                "type": "string"
+              },
+              {
+                "name": "marketplaceId",
+                "type": "string"
+              },
+              {
+                "name": "nsin",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "type": "record",
+            "name": "NileProduct",
+            "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",
+            "fields": [
+              {
+                "name": "sellerId",
+                "type": "string"
+              },
+              {
+                "name": "marketplaceId",
+                "type": "string"
+              },
+              {
+                "name": "sku",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "type": "record",
+            "name": "WallyworldProduct",
+            "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",
+            "fields": [
+              {
+                "name": "advertiserId",
+                "type": "long"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sentAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "NileProductCogsEvent",
+    "namespace": "marketprice.messages.cogs",
+    "doc": "MPrice-published COGS Event for an Nile product: mprice/cogs/v0/nile-product/event",
+    "fields": [
+      {
+        "name": "sellerId",
+        "type": "string"
+      },
+      {
+        "name": "marketplaceId",
+        "type": "string"
+      },
+      {
+        "name": "sku",
+        "type": "string"
+      },
+      {
+        "name": "cost",
+        "type": {
+          "type": "record",
+          "name": "Money",
+          "namespace": "marketprice.messages.cogs.NileProductCogsEvent",
+          "doc": "Money: decimal(21,2) amount and currency code",
+          "fields": [
+            {
+              "name": "amount",
+              "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 21,
+                "scale": 2
+              }
+            },
+            {
+              "name": "currency",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      {
+        "name": "occurredAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      },
+      {
+        "name": "initiatedBy",
+        "type": "string"
+      },
+      {
+        "name": "effectiveOn",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "TargetingRecommendationToEnricher",
+    "namespace": "marketprice.messages.targeting_recommendation_engine",
+    "doc": "Provides required information to the TRE serving layer: mprice/v0/targeting-recommendation-to-enricher",
+    "fields": [
+      {
+        "name": "product",
+        "type": {
+          "type": "record",
+          "name": "TargetingRecommendationProduct",
+          "doc": "product that requires a targeting recommendation: mprice/v0/targeting-recommendation-product",
+          "fields": [
+            {
+              "name": "productIdentifier",
+              "type": [
+                {
+                  "type": "record",
+                  "name": "Nile1pProduct",
+                  "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",
+                  "fields": [
+                    {
+                      "name": "vendorId",
+                      "type": "string"
+                    },
+                    {
+                      "name": "marketplaceId",
+                      "type": "string"
+                    },
+                    {
+                      "name": "nsin",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "type": "record",
+                  "name": "NileProduct",
+                  "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",
+                  "fields": [
+                    {
+                      "name": "sellerId",
+                      "type": "string"
+                    },
+                    {
+                      "name": "marketplaceId",
+                      "type": "string"
+                    },
+                    {
+                      "name": "sku",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "type": "record",
+                  "name": "WallyworldProduct",
+                  "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",
+                  "fields": [
+                    {
+                      "name": "advertiserId",
+                      "type": "long"
+                    },
+                    {
+                      "name": "itemId",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "sentAt",
+              "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "entityType",
+        "type": {
+          "type": "enum",
+          "name": "EntityType",
+          "namespace": "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationToEnricher",
+          "doc": "The entity type for the targeting clause: ",
+          "symbols": [
+            "SPTarget",
+            "SPKeyword",
+            "SBKeyword",
+            "AdGroup",
+            "WallyworldKeyword",
+            "WallyworldAdItem"
+          ]
+        }
+      },
+      {
+        "name": "targetingClause",
+        "type": "string"
+      },
+      {
+        "name": "sentAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  }
+]
