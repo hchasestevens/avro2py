@@ -16,7 +16,6 @@ AvroDictType = Dict[
 
 
 _CONVERTERS_TO_AVRO = []
-_CONVERTERS_FROM_AVRO = []
 
 
 def compose(*fns: Callable) -> Callable:
@@ -44,45 +43,7 @@ def _safe_convert_namedtuple(v: Union[NamedTuple, Any]) -> Union[AvroDictType, A
     return v
 
 
-def identity(x):
-    return x
-
-
-@_CONVERTERS_FROM_AVRO.append
-def _convert_enum(type_annotation):
-    if isinstance(type_annotation, EnumMeta):
-        values_to_members = {
-            member.value: member
-            for member in type_annotation.__members__.values()
-        }
-        return values_to_members.get
-    return identity
-
-
-@_CONVERTERS_FROM_AVRO.append
-def _convert_uuid(type_annotation):
-    if type_annotation is UUID:
-        return lambda v: UUID(v)
-    return identity
-
-
-@_CONVERTERS_FROM_AVRO.append
-def _convert_nt(type_annotation):
-    if hasattr(type_annotation, '_asdict'):
-        return lambda v: from_avro_dict(v, record_type=type_annotation)
-    return identity
-
-
-@_CONVERTERS_FROM_AVRO.append
-def _convert_union(type_annotation):
-    if getattr(type_annotation, '__class__', Union):
-        ...
-    return identity
-
-
 _convert_types_to_avro = compose(*_CONVERTERS_TO_AVRO)
-
-_convert_types_from_avro = compose(*_CONVERTERS_FROM_AVRO)
 
 
 def to_avro_dict(record: NamedTuple) -> AvroDictType:
