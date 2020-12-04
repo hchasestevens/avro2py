@@ -2,6 +2,7 @@
 
 import ast
 import itertools
+import json
 import re
 from collections import defaultdict
 from contextlib import contextmanager
@@ -32,12 +33,11 @@ LOGICAL_TYPE_MAPPINGS = {
     LogicalTypes.TIMESTAMP_MILLIS: ['datetime', 'datetime.datetime'],
     LogicalTypes.TIMESTAMP_MICROS: ['datetime', 'datetime.datetime'],
     LogicalTypes.DURATION: ['datetime', 'datetime.timedelta'],
-    LogicalTypes.UUID: ['uuid', 'uuid.UUID']
+    LogicalTypes.UUID: ['uuid', 'uuid.UUID'],
 }
 
 
-NODE_CLASS_CONVERTERS = {
-}
+NODE_CLASS_CONVERTERS = {}
 
 
 def node_converter(fn):
@@ -164,6 +164,12 @@ def record_to_class(record: Record) -> ResolvedClassResult:
         fields.append(field_def)
 
     class_body.extend(fields)
+    class_body.append(
+        ast.Assign(  # _original_schema = "..."
+            targets=[ast.Name(id='_original_schema')],
+            value=ast.Str(s=json.dumps(record.original_schema))
+        )
+    )
 
     class_def = ast.ClassDef(
         name=record.name,
@@ -485,9 +491,6 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
     for namespace_name, namespace in namespace_nodes.items():
         if not isinstance(namespace.node, ast.Module):
             continue
-
-        if namespace_name == 'teikametrics.messages.targeting_recommendation_engine':
-            import astor; print(astor.to_source(namespace.node))
 
         # transform fully-qualified internal cross-reference forward annotations
         # to relative (resolvable) forward annotations, adding any necessary imports

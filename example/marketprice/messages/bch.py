@@ -13,6 +13,14 @@ class ProductTrigger(NamedTuple):
     sellerId: str
     marketplaceId: str
     sku: str
+    _original_schema = (
+        '{"type": "record", "name": "ProductTrigger", "namespace":'
+        ' "marketprice.messages.bch", "doc": "BCH Product for Demand Forecast'
+        ' processing: MpDataType(mprice/bch/x/demand-forecast/product-trigger)",'
+        ' "fields": [{"name": "channel", "type": "string"}, {"name": "sellerId",'
+        ' "type": "string"}, {"name": "marketplaceId", "type": "string"}, {"name":'
+        ' "sku", "type": "string"}]}'
+    )
 
 
 class ProductDemandEstimate(NamedTuple):
@@ -29,3 +37,14 @@ class ProductDemandEstimate(NamedTuple):
     requestedAt: datetime.date
     percentile: str
     estimate: int
+    _original_schema = (
+        '{"type": "record", "name": "ProductDemandEstimate", "namespace":'
+        ' "marketprice.messages.bch", "doc": "BCH Demand Forecast response record:'
+        ' MpDataType(mprice/bch/x/demand-forecast/deciles)", "fields": [{"name":'
+        ' "channel", "type": "string"}, {"name": "sellerId", "type": "string"},'
+        ' {"name": "marketplaceId", "type": "string"}, {"name": "sku", "type":'
+        ' "string"}, {"name": "forecastDate", "type": {"type": "int", "logicalType":'
+        ' "date"}}, {"name": "requestedAt", "type": {"type": "int", "logicalType":'
+        ' "date"}}, {"name": "percentile", "type": "string"}, {"name": "estimate",'
+        ' "type": "int"}]}'
+    )

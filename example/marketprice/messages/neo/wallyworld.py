@@ -19,6 +19,22 @@ class AdItemUpdateResponse(NamedTuple):
     submissionId: uuid.UUID
     requestedAt: datetime.datetime
     receivedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "AdItemUpdateResponse", "namespace":'
+        ' "marketprice.messages.neo.wallyworld", "doc": "Response for an'
+        " AdItemUpdateRequest message:"
+        ' wallyworld-sponsored-products-api/v1/response-update/ad-item", "fields":'
+        ' [{"name": "code", "type": {"type": "enum", "name": "ResponseCode",'
+        ' "namespace": "marketprice.messages.neo.wallyworld.AdItemUpdateResponse",'
+        ' "doc": "code returned by Wallyworld API", "symbols": ["success",'
+        ' "failure"]}}, {"name": "errorDetails", "type": ["null", "string"]}, {"name":'
+        ' "advertiserId", "type": "long"}, {"name": "bid", "type": {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 12, "scale": 4}}, {"name":'
+        ' "submissionId", "type": {"type": "string", "logicalType": "uuid"}}, {"name":'
+        ' "requestedAt", "type": {"type": "long", "logicalType": "timestamp-millis"}},'
+        ' {"name": "receivedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
     @enum.unique
     class ResponseCode(enum.Enum):
@@ -43,6 +59,22 @@ class KeywordUpdateResponse(NamedTuple):
     submissionId: uuid.UUID
     requestedAt: datetime.datetime
     receivedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "KeywordUpdateResponse", "namespace":'
+        ' "marketprice.messages.neo.wallyworld", "doc": "Response for a'
+        " KeywordUpdateRequest message:"
+        ' wallyworld-sponsored-products-api/v1/response-update/keyword", "fields":'
+        ' [{"name": "code", "type": {"type": "enum", "name": "ResponseCode",'
+        ' "namespace": "marketprice.messages.neo.wallyworld.KeywordUpdateResponse",'
+        ' "doc": "code returned by Wallyworld API", "symbols": ["success",'
+        ' "failure"]}}, {"name": "errorDetails", "type": ["null", "string"]}, {"name":'
+        ' "advertiserId", "type": "long"}, {"name": "bid", "type": {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 12, "scale": 4}}, {"name":'
+        ' "submissionId", "type": {"type": "string", "logicalType": "uuid"}}, {"name":'
+        ' "requestedAt", "type": {"type": "long", "logicalType": "timestamp-millis"}},'
+        ' {"name": "receivedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
     @enum.unique
     class ResponseCode(enum.Enum):
@@ -69,6 +101,19 @@ class AdItemUpdateRequest(NamedTuple):
     submissionId: uuid.UUID
     publishedAt: datetime.datetime
     expiresAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "AdItemUpdateRequest", "namespace":'
+        ' "marketprice.messages.neo.wallyworld", "doc": "AdItem update request:'
+        ' wallyworld-sponsored-products-api/v1/request-update/ad-item", "fields":'
+        ' [{"name": "advertiserId", "type": "long"}, {"name": "campaignId", "type":'
+        ' "long"}, {"name": "adGroupId", "type": "long"}, {"name": "itemId", "type":'
+        ' "string"}, {"name": "bid", "type": {"type": "bytes", "logicalType":'
+        ' "decimal", "precision": 12, "scale": 4}}, {"name": "status", "type":'
+        ' "string"}, {"name": "submissionId", "type": {"type": "string", "logicalType":'
+        ' "uuid"}}, {"name": "publishedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}, {"name": "expiresAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}'
+    )
 
 
 class KeywordUpdateRequest(NamedTuple):
@@ -84,3 +129,15 @@ class KeywordUpdateRequest(NamedTuple):
     submissionId: uuid.UUID
     publishedAt: datetime.datetime
     expiresAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "KeywordUpdateRequest", "namespace":'
+        ' "marketprice.messages.neo.wallyworld", "doc": "Keyword update request:'
+        ' wallyworld-sponsored-products-api/v1/request-update/keyword", "fields":'
+        ' [{"name": "keywordId", "type": "long"}, {"name": "bid", "type": {"type":'
+        ' "bytes", "logicalType": "decimal", "precision": 12, "scale": 4}}, {"name":'
+        ' "status", "type": "string"}, {"name": "advertiserId", "type": "long"},'
+        ' {"name": "submissionId", "type": {"type": "string", "logicalType": "uuid"}},'
+        ' {"name": "publishedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}, {"name": "expiresAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}'
+    )

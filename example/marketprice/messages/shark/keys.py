@@ -9,6 +9,11 @@ class IntKey(NamedTuple):
     """
 
     id: int
+    _original_schema = (
+        '{"type": "record", "name": "IntKey", "namespace":'
+        ' "marketprice.messages.shark.keys", "doc": "Model for a Kafka key consisting'
+        ' solely of an Integer", "fields": [{"name": "id", "type": "int"}]}'
+    )
 
 
 class UuidKey(NamedTuple):
@@ -17,6 +22,12 @@ class UuidKey(NamedTuple):
     """
 
     id: uuid.UUID
+    _original_schema = (
+        '{"type": "record", "name": "UuidKey", "namespace":'
+        ' "marketprice.messages.shark.keys", "doc": "Model for a Kafka key consisting'
+        ' solely of a UUID", "fields": [{"name": "id", "type": {"type": "string",'
+        ' "logicalType": "uuid"}}]}'
+    )
 
 
 class StringKey(NamedTuple):
@@ -25,6 +36,11 @@ class StringKey(NamedTuple):
     """
 
     id: str
+    _original_schema = (
+        '{"type": "record", "name": "StringKey", "namespace":'
+        ' "marketprice.messages.shark.keys", "doc": "Model for a Kafka key consisting'
+        ' solely of a String", "fields": [{"name": "id", "type": "string"}]}'
+    )
 
 
 class LongKey(NamedTuple):
@@ -33,3 +49,8 @@ class LongKey(NamedTuple):
     """
 
     id: int
+    _original_schema = (
+        '{"type": "record", "name": "LongKey", "namespace":'
+        ' "marketprice.messages.shark.keys", "doc": "Model for a Kafka key consisting'
+        ' solely of a Long", "fields": [{"name": "id", "type": "long"}]}'
+    )

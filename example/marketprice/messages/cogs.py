@@ -17,6 +17,20 @@ class NileProductCogsEvent(NamedTuple):
     occurredAt: datetime.datetime
     initiatedBy: str
     effectiveOn: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "NileProductCogsEvent", "namespace":'
+        ' "marketprice.messages.cogs", "doc": "MPrice-published COGS Event for an Nile'
+        ' product: mprice/cogs/v0/nile-product/event", "fields": [{"name": "sellerId",'
+        ' "type": "string"}, {"name": "marketplaceId", "type": "string"}, {"name":'
+        ' "sku", "type": "string"}, {"name": "cost", "type": {"type": "record", "name":'
+        ' "Money", "namespace": "marketprice.messages.cogs.NileProductCogsEvent",'
+        ' "doc": "Money: decimal(21,2) amount and currency code", "fields": [{"name":'
+        ' "amount", "type": {"type": "bytes", "logicalType": "decimal", "precision":'
+        ' 21, "scale": 2}}, {"name": "currency", "type": "string"}]}}, {"name":'
+        ' "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}},'
+        ' {"name": "initiatedBy", "type": "string"}, {"name": "effectiveOn", "type":'
+        ' {"type": "long", "logicalType": "timestamp-millis"}}]}'
+    )
 
     class Money(NamedTuple):
         """
@@ -25,3 +39,10 @@ class NileProductCogsEvent(NamedTuple):
 
         amount: decimal.Decimal
         currency: str
+        _original_schema = (
+            '{"type": "record", "name": "Money", "namespace":'
+            ' "marketprice.messages.cogs.NileProductCogsEvent", "doc": "Money:'
+            ' decimal(21,2) amount and currency code", "fields": [{"name": "amount",'
+            ' "type": {"type": "bytes", "logicalType": "decimal", "precision": 21,'
+            ' "scale": 2}}, {"name": "currency", "type": "string"}]}'
+        )

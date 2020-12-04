@@ -15,6 +15,36 @@ class TargetingRecommendationToEnricher(NamedTuple):
     entityType: "TargetingRecommendationToEnricher.EntityType"
     targetingClause: str
     sentAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "TargetingRecommendationToEnricher", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine", "doc": "Provides'
+        " required information to the TRE serving layer:"
+        ' mprice/v0/targeting-recommendation-to-enricher", "fields": [{"name":'
+        ' "product", "type": {"type": "record", "name":'
+        ' "TargetingRecommendationProduct", "doc": "product that requires a targeting'
+        ' recommendation: mprice/v0/targeting-recommendation-product", "fields":'
+        ' [{"name": "productIdentifier", "type": [{"type": "record", "name":'
+        ' "Nile1pProduct", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+        ' "fields": [{"name": "vendorId", "type": "string"}, {"name": "marketplaceId",'
+        ' "type": "string"}, {"name": "nsin", "type": "string"}]}, {"type": "record",'
+        ' "name": "NileProduct", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+        ' "fields": [{"name": "sellerId", "type": "string"}, {"name": "marketplaceId",'
+        ' "type": "string"}, {"name": "sku", "type": "string"}]}, {"type": "record",'
+        ' "name": "WallyworldProduct", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "itemId",'
+        ' "type": "string"}]}]}, {"name": "sentAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}}, {"name": "entityType", "type":'
+        ' {"type": "enum", "name": "EntityType", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationToEnricher",'
+        ' "doc": "The entity type for the targeting clause: ", "symbols": ["SPTarget",'
+        ' "SPKeyword", "SBKeyword", "AdGroup", "WallyworldKeyword",'
+        ' "WallyworldAdItem"]}}, {"name": "targetingClause", "type": "string"},'
+        ' {"name": "sentAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
     @enum.unique
     class EntityType(enum.Enum):
@@ -42,21 +72,60 @@ class TargetingRecommendationProduct(NamedTuple):
         "TargetingRecommendationProduct.ProductIdentifier.WallyworldProduct",
     ]
     sentAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "TargetingRecommendationProduct", "doc": "product'
+        " that requires a targeting recommendation:"
+        ' mprice/v0/targeting-recommendation-product", "fields": [{"name":'
+        ' "productIdentifier", "type": [{"type": "record", "name": "Nile1pProduct",'
+        ' "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+        ' "fields": [{"name": "vendorId", "type": "string"}, {"name": "marketplaceId",'
+        ' "type": "string"}, {"name": "nsin", "type": "string"}]}, {"type": "record",'
+        ' "name": "NileProduct", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+        ' "fields": [{"name": "sellerId", "type": "string"}, {"name": "marketplaceId",'
+        ' "type": "string"}, {"name": "sku", "type": "string"}]}, {"type": "record",'
+        ' "name": "WallyworldProduct", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "itemId",'
+        ' "type": "string"}]}]}, {"name": "sentAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}'
+    )
 
     class ProductIdentifier:
         class WallyworldProduct(NamedTuple):
             advertiserId: int
             itemId: str
+            _original_schema = (
+                '{"type": "record", "name": "WallyworldProduct", "namespace":'
+                ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+                ' "fields": [{"name": "advertiserId", "type": "long"}, {"name":'
+                ' "itemId", "type": "string"}]}'
+            )
 
         class NileProduct(NamedTuple):
             sellerId: str
             marketplaceId: str
             sku: str
+            _original_schema = (
+                '{"type": "record", "name": "NileProduct", "namespace":'
+                ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+                ' "fields": [{"name": "sellerId", "type": "string"}, {"name":'
+                ' "marketplaceId", "type": "string"}, {"name": "sku", "type":'
+                ' "string"}]}'
+            )
 
         class Nile1pProduct(NamedTuple):
             vendorId: str
             marketplaceId: str
             nsin: str
+            _original_schema = (
+                '{"type": "record", "name": "Nile1pProduct", "namespace":'
+                ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendationProduct.ProductIdentifier",'
+                ' "fields": [{"name": "vendorId", "type": "string"}, {"name":'
+                ' "marketplaceId", "type": "string"}, {"name": "nsin", "type":'
+                ' "string"}]}'
+            )
 
 
 class TargetingRecommendation(NamedTuple):
@@ -75,6 +144,43 @@ class TargetingRecommendation(NamedTuple):
         "TargetingRecommendation.Keyword",
         "TargetingRecommendation.ProductAttributeTarget",
     ]
+    _original_schema = (
+        '{"type": "record", "name": "TargetingRecommendation", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine", "doc": "targeting'
+        ' recommendation engine decisions: mprice/v0/targeting-recommendation",'
+        ' "fields": [{"name": "profileId", "type": "long"}, {"name": "campaignId",'
+        ' "type": "long"}, {"name": "adGroupId", "type": "long"}, {"name": "sku",'
+        ' "type": "string"}, {"name": "bid", "type": {"type": "bytes", "logicalType":'
+        ' "decimal", "precision": 21, "scale": 2}}, {"name": "recommendationScore",'
+        ' "type": {"type": "bytes", "logicalType": "decimal", "precision": 21, "scale":'
+        ' 2}}, {"name": "recommendedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}, {"name": "Recommendation", "type": [{"type": "record",'
+        ' "name": "Keyword", "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendation",'
+        ' "doc": "keyword description", "fields": [{"name": "keywordText", "type":'
+        ' "string"}, {"name": "matchType", "type": {"type": "enum", "name":'
+        ' "KeywordMatchType", "symbols": ["exact", "phrase", "broad"]}}, {"name":'
+        ' "keywordState", "type": {"type": "enum", "name": "KeywordState", "doc":'
+        ' "Possible states of a keyword", "symbols": ["enabled", "paused",'
+        ' "archived"]}}]}, {"type": "record", "name": "ProductAttributeTarget",'
+        ' "namespace":'
+        ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendation",'
+        ' "doc": "PAT expression description", "fields": [{"name": "expression",'
+        ' "type": {"type": "array", "items": {"type": "record", "name": "Predicate",'
+        ' "doc": "Predicate of PAT expression for target recommendation", "fields":'
+        ' [{"name": "predicateType", "type": {"type": "enum", "name": "PredicateType",'
+        ' "doc": "Types of PAT expression predicate enum", "symbols":'
+        ' ["queryBroadMatches", "queryPhraseMatches", "queryExactMatches",'
+        ' "nsinCategorySameAs", "nsinBrandSameAs", "nsinPriceLessThan",'
+        ' "nsinPriceBetween", "nsinPriceGreaterThan", "nsinReviewRatingLessThan",'
+        ' "nsinReviewRatingBetween", "nsinReviewRatingGreaterThan", "nsinSameAs",'
+        ' "queryBroadRelMatches", "queryHighRelMatches", "nsinSubstituteRelated",'
+        ' "nsinAccessoryRelated", "nsinAgeRangeSameAs", "nsinGenreSameAs",'
+        ' "nsinIsPrimeShippingEligible"]}}, {"name": "value", "type": "string"}]}}},'
+        ' {"name": "expressionType", "type": {"type": "enum", "name": "ExpressionType",'
+        ' "doc": "Possible types of an expression", "symbols": ["auto", "manual"]}},'
+        ' {"name": "expressionState", "type": "KeywordState"}]}]}]}'
+    )
 
     class ProductAttributeTarget(NamedTuple):
         """
@@ -84,6 +190,27 @@ class TargetingRecommendation(NamedTuple):
         expression: List["TargetingRecommendation.Predicate"]
         expressionType: "TargetingRecommendation.ExpressionType"
         expressionState: "TargetingRecommendation.KeywordState"
+        _original_schema = (
+            '{"type": "record", "name": "ProductAttributeTarget", "namespace":'
+            ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendation",'
+            ' "doc": "PAT expression description", "fields": [{"name": "expression",'
+            ' "type": {"type": "array", "items": {"type": "record", "name":'
+            ' "Predicate", "doc": "Predicate of PAT expression for target'
+            ' recommendation", "fields": [{"name": "predicateType", "type": {"type":'
+            ' "enum", "name": "PredicateType", "doc": "Types of PAT expression'
+            ' predicate enum", "symbols": ["queryBroadMatches", "queryPhraseMatches",'
+            ' "queryExactMatches", "nsinCategorySameAs", "nsinBrandSameAs",'
+            ' "nsinPriceLessThan", "nsinPriceBetween", "nsinPriceGreaterThan",'
+            ' "nsinReviewRatingLessThan", "nsinReviewRatingBetween",'
+            ' "nsinReviewRatingGreaterThan", "nsinSameAs", "queryBroadRelMatches",'
+            ' "queryHighRelMatches", "nsinSubstituteRelated", "nsinAccessoryRelated",'
+            ' "nsinAgeRangeSameAs", "nsinGenreSameAs",'
+            ' "nsinIsPrimeShippingEligible"]}}, {"name": "value", "type":'
+            ' "string"}]}}}, {"name": "expressionType", "type": {"type": "enum",'
+            ' "name": "ExpressionType", "doc": "Possible types of an expression",'
+            ' "symbols": ["auto", "manual"]}}, {"name": "expressionState", "type":'
+            ' "KeywordState"}]}'
+        )
 
     @enum.unique
     class ExpressionType(enum.Enum):
@@ -101,6 +228,19 @@ class TargetingRecommendation(NamedTuple):
 
         predicateType: "TargetingRecommendation.PredicateType"
         value: str
+        _original_schema = (
+            '{"type": "record", "name": "Predicate", "doc": "Predicate of PAT'
+            ' expression for target recommendation", "fields": [{"name":'
+            ' "predicateType", "type": {"type": "enum", "name": "PredicateType", "doc":'
+            ' "Types of PAT expression predicate enum", "symbols":'
+            ' ["queryBroadMatches", "queryPhraseMatches", "queryExactMatches",'
+            ' "nsinCategorySameAs", "nsinBrandSameAs", "nsinPriceLessThan",'
+            ' "nsinPriceBetween", "nsinPriceGreaterThan", "nsinReviewRatingLessThan",'
+            ' "nsinReviewRatingBetween", "nsinReviewRatingGreaterThan", "nsinSameAs",'
+            ' "queryBroadRelMatches", "queryHighRelMatches", "nsinSubstituteRelated",'
+            ' "nsinAccessoryRelated", "nsinAgeRangeSameAs", "nsinGenreSameAs",'
+            ' "nsinIsPrimeShippingEligible"]}}, {"name": "value", "type": "string"}]}'
+        )
 
     @enum.unique
     class PredicateType(enum.Enum):
@@ -136,6 +276,16 @@ class TargetingRecommendation(NamedTuple):
         keywordText: str
         matchType: "TargetingRecommendation.KeywordMatchType"
         keywordState: "TargetingRecommendation.KeywordState"
+        _original_schema = (
+            '{"type": "record", "name": "Keyword", "namespace":'
+            ' "marketprice.messages.targeting_recommendation_engine.TargetingRecommendation",'
+            ' "doc": "keyword description", "fields": [{"name": "keywordText", "type":'
+            ' "string"}, {"name": "matchType", "type": {"type": "enum", "name":'
+            ' "KeywordMatchType", "symbols": ["exact", "phrase", "broad"]}}, {"name":'
+            ' "keywordState", "type": {"type": "enum", "name": "KeywordState", "doc":'
+            ' "Possible states of a keyword", "symbols": ["enabled", "paused",'
+            ' "archived"]}}]}'
+        )
 
     @enum.unique
     class KeywordState(enum.Enum):

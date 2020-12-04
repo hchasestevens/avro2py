@@ -1,3 +1,4 @@
 astor
 avro
 black
+hypothesis

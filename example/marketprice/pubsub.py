@@ -8,3 +8,10 @@ class S3FileDescriptor(NamedTuple):
     contentType: str
     contentEncoding: str
     metadata: Dict[str, str]
+    _original_schema = (
+        '{"type": "record", "name": "S3FileDescriptor", "namespace":'
+        ' "marketprice.pubsub", "fields": [{"name": "bucket", "type": "string"},'
+        ' {"name": "key", "type": "string"}, {"name": "contentType", "type": "string"},'
+        ' {"name": "contentEncoding", "type": "string"}, {"name": "metadata", "type":'
+        ' {"type": "map", "values": "string"}}]}'
+    )

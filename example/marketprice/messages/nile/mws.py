@@ -20,6 +20,24 @@ class FbaProductFeeEstimate(NamedTuple):
     maybeEstimatedFulfillmentFee: Optional[decimal.Decimal]
     requestedAt: datetime.datetime
     receivedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "FbaProductFeeEstimate", "namespace":'
+        ' "marketprice.messages.nile.mws", "doc": "Mws Fba Product Fee estimate:'
+        ' MpDataType(nile-mws-api/2009-01-01/parsed/fba-estimated-fees)", "fields":'
+        ' [{"name": "sellerId", "type": "string"}, {"name": "marketplaceId", "type":'
+        ' "string"}, {"name": "sku", "type": "string"}, {"name": "currency", "type":'
+        ' "string"}, {"name": "priceToEstimateAt", "type": {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 21, "scale": 2}}, {"name":'
+        ' "maybeEstimatedReferralFee", "type": ["null", {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 21, "scale": 2}]}, {"name":'
+        ' "maybeEstimatedVariableClosingFee", "type": ["null", {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 21, "scale": 2}]}, {"name":'
+        ' "maybeEstimatedFulfillmentFee", "type": ["null", {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 21, "scale": 2}]}, {"name":'
+        ' "requestedAt", "type": {"type": "long", "logicalType": "timestamp-millis"}},'
+        ' {"name": "receivedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
 
 class GetMatchingProductForId(NamedTuple):
@@ -37,8 +55,30 @@ class GetMatchingProductForId(NamedTuple):
     requestedAt: datetime.datetime
     receivedAt: datetime.datetime
     title: Optional[str]
+    _original_schema = (
+        '{"type": "record", "name": "GetMatchingProductForId", "namespace":'
+        ' "marketprice.messages.nile.mws", "doc": "GetMatchingProductForId Record:'
+        ' nile-mws-api/2009-01-01/parsed/get-matching-product-for-id", "fields":'
+        ' [{"name": "nsin", "type": "string"}, {"name": "marketplaceId", "type":'
+        ' "string"}, {"name": "parent", "type": ["null", "string"]}, {"name":'
+        ' "children", "type": {"type": "array", "items": "string"}}, {"name": "image",'
+        ' "type": ["null", {"type": "record", "name": "ImageData", "namespace":'
+        ' "marketprice.messages.nile.mws.GetMatchingProductForId", "fields": [{"name":'
+        ' "url", "type": "string"}, {"name": "heightPx", "type": "int"}, {"name":'
+        ' "widthPx", "type": "int"}]}]}, {"name": "salesRank", "type": {"type": "map",'
+        ' "values": "int"}}, {"name": "requestedAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}, {"name": "receivedAt", "type": {"type":'
+        ' "long", "logicalType": "timestamp-millis"}}, {"name": "title", "type":'
+        ' ["null", "string"]}]}'
+    )
 
     class ImageData(NamedTuple):
         url: str
         heightPx: int
         widthPx: int
+        _original_schema = (
+            '{"type": "record", "name": "ImageData", "namespace":'
+            ' "marketprice.messages.nile.mws.GetMatchingProductForId", "fields":'
+            ' [{"name": "url", "type": "string"}, {"name": "heightPx", "type": "int"},'
+            ' {"name": "widthPx", "type": "int"}]}'
+        )

@@ -16,6 +16,17 @@ class Credentials(NamedTuple):
     receivedAt: datetime.datetime
     submissionId: uuid.UUID
     publishedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "Credentials", "namespace":'
+        ' "marketprice.messages.wallyworld.marketplace.v3", "doc": "Wallyworld'
+        ' Marketplace API Credentials: wallyworld-marketplace-api/v3/credentials",'
+        ' "fields": [{"name": "mpAccountId", "type": {"type": "string", "logicalType":'
+        ' "uuid"}}, {"name": "clientId", "type": "string"}, {"name": "clientSecret",'
+        ' "type": "string"}, {"name": "receivedAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}, {"name": "submissionId", "type":'
+        ' {"type": "string", "logicalType": "uuid"}}, {"name": "publishedAt", "type":'
+        ' {"type": "long", "logicalType": "timestamp-millis"}}]}'
+    )
 
 
 class Response(NamedTuple):
@@ -28,3 +39,13 @@ class Response(NamedTuple):
     submissionId: uuid.UUID
     status: str
     publishedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "Response", "namespace":'
+        ' "marketprice.messages.wallyworld.marketplace.v3", "doc": "Wallyworld'
+        " Marketplace API Credentials:"
+        ' wallyworld-marketplace-api/v3/credentials/response", "fields": [{"name":'
+        ' "mpAccountId", "type": {"type": "string", "logicalType": "uuid"}}, {"name":'
+        ' "submissionId", "type": {"type": "string", "logicalType": "uuid"}}, {"name":'
+        ' "status", "type": "string"}, {"name": "publishedAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}'
+    )

@@ -18,6 +18,18 @@ class WallyworldKeyword(NamedTuple):
     matchType: str
     bid: decimal.Decimal
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldKeyword", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Keyword Snapshot'
+        " for bidder:"
+        ' wallyworld-sponsored-products-api/entity/v1/parsed-bidder/keyword", "fields":'
+        ' [{"name": "advertiserId", "type": "long"}, {"name": "campaignId", "type":'
+        ' "long"}, {"name": "adGroupId", "type": "long"}, {"name": "keywordId", "type":'
+        ' "long"}, {"name": "state", "type": "string"}, {"name": "matchType", "type":'
+        ' "string"}, {"name": "bid", "type": {"type": "bytes", "logicalType":'
+        ' "decimal", "precision": 12, "scale": 4}}, {"name": "requestedAt", "type":'
+        ' {"type": "long", "logicalType": "timestamp-millis"}}]}'
+    )
 
 
 class WallyworldCampaign(NamedTuple):
@@ -31,6 +43,16 @@ class WallyworldCampaign(NamedTuple):
     targetingType: str
     state: str
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldCampaign", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Campaign'
+        " Snapshot for bidder:"
+        ' wallyworld-sponsored-products-api/entity/v1/parsed-bidder/campaign",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "campaignId",'
+        ' "type": "long"}, {"name": "targetingType", "type": "string"}, {"name":'
+        ' "state", "type": "string"}, {"name": "requestedAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}'
+    )
 
 
 class WallyworldKeywordReport(NamedTuple):
@@ -49,6 +71,21 @@ class WallyworldKeywordReport(NamedTuple):
     sales: decimal.Decimal
     date: datetime.date
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldKeywordReport", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Keyword Report'
+        " for bidder:"
+        ' wallyworld-sponsored-products-api/reports/v1/parsed-bidder/keyword",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "keywordId",'
+        ' "type": "long"}, {"name": "searchTerm", "type": "string"}, {"name":'
+        ' "impressions", "type": "int"}, {"name": "clicks", "type": "int"}, {"name":'
+        ' "unitsOrdered", "type": "int"}, {"name": "cost", "type": {"type": "bytes",'
+        ' "logicalType": "decimal", "precision": 21, "scale": 2}}, {"name": "sales",'
+        ' "type": {"type": "bytes", "logicalType": "decimal", "precision": 21, "scale":'
+        ' 2}}, {"name": "date", "type": {"type": "int", "logicalType": "date"}},'
+        ' {"name": "requestedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
 
 class WallyworldAdItemReport(NamedTuple):
@@ -67,6 +104,21 @@ class WallyworldAdItemReport(NamedTuple):
     clicks: int
     unitsOrdered: int
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldAdItemReport", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Ad Item Report'
+        " for bidder:"
+        ' wallyworld-sponsored-products-api/reports/v1/parsed-bidder/ad-item",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "adGroupId",'
+        ' "type": "long"}, {"name": "itemId", "type": "string"}, {"name": "date",'
+        ' "type": {"type": "int", "logicalType": "date"}}, {"name": "cost", "type":'
+        ' {"type": "bytes", "logicalType": "decimal", "precision": 21, "scale": 2}},'
+        ' {"name": "sales", "type": {"type": "bytes", "logicalType": "decimal",'
+        ' "precision": 21, "scale": 2}}, {"name": "impressions", "type": "int"},'
+        ' {"name": "clicks", "type": "int"}, {"name": "unitsOrdered", "type": "int"},'
+        ' {"name": "requestedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
 
 class WallyworldAdGroupReport(NamedTuple):
@@ -85,6 +137,21 @@ class WallyworldAdGroupReport(NamedTuple):
     clicks: int
     unitsOrdered: int
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldAdGroupReport", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Ad Group Report'
+        " for bidder:"
+        ' wallyworld-sponsored-products-api/reports/v1/parsed-bidder/ad-group",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "campaignId",'
+        ' "type": "long"}, {"name": "adGroupId", "type": "long"}, {"name": "date",'
+        ' "type": {"type": "int", "logicalType": "date"}}, {"name": "cost", "type":'
+        ' {"type": "bytes", "logicalType": "decimal", "precision": 21, "scale": 2}},'
+        ' {"name": "sales", "type": {"type": "bytes", "logicalType": "decimal",'
+        ' "precision": 21, "scale": 2}}, {"name": "impressions", "type": "int"},'
+        ' {"name": "clicks", "type": "int"}, {"name": "unitsOrdered", "type": "int"},'
+        ' {"name": "requestedAt", "type": {"type": "long", "logicalType":'
+        ' "timestamp-millis"}}]}'
+    )
 
 
 class WallyworldAdGroup(NamedTuple):
@@ -98,6 +165,16 @@ class WallyworldAdGroup(NamedTuple):
     adGroupId: int
     state: str
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldAdGroup", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Ad Group'
+        " Snapshot for bidder:"
+        ' wallyworld-sponsored-products-api/entity/v1/parsed-bidder/ad-group",'
+        ' "fields": [{"name": "advertiserId", "type": "long"}, {"name": "campaignId",'
+        ' "type": "long"}, {"name": "adGroupId", "type": "long"}, {"name": "state",'
+        ' "type": "string"}, {"name": "requestedAt", "type": {"type": "long",'
+        ' "logicalType": "timestamp-millis"}}]}'
+    )
 
 
 class WallyworldAdItem(NamedTuple):
@@ -114,3 +191,15 @@ class WallyworldAdItem(NamedTuple):
     state: str
     bid: decimal.Decimal
     requestedAt: datetime.datetime
+    _original_schema = (
+        '{"type": "record", "name": "WallyworldAdItem", "namespace":'
+        ' "marketprice.messages.wallyworld.bidder", "doc": "Wallyworld Ad Item Snapshot'
+        " for bidder:"
+        ' wallyworld-sponsored-products-api/entity/v1/parsed-bidder/ad-item", "fields":'
+        ' [{"name": "advertiserId", "type": "long"}, {"name": "campaignId", "type":'
+        ' "long"}, {"name": "adGroupId", "type": "long"}, {"name": "adItemId", "type":'
+        ' "long"}, {"name": "itemId", "type": "string"}, {"name": "state", "type":'
+        ' "string"}, {"name": "bid", "type": {"type": "bytes", "logicalType":'
+        ' "decimal", "precision": 12, "scale": 4}}, {"name": "requestedAt", "type":'
+        ' {"type": "long", "logicalType": "timestamp-millis"}}]}'
+    )
