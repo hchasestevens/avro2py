@@ -53,6 +53,7 @@ def test_example_message_round_trippable(data):
         if d is None:
             return
         assume(d.is_finite())
+        assume(len(d.as_tuple().digits) < 21)  # if there are more digits than precision, round-tripping will truncate
         assume(d.as_tuple().exponent == -2)  # bug in avro python implementation; exponent _must_ match scale
 
     check_decimal(original_example_avro_model.decimal)
