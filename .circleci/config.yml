@@ -8,9 +8,9 @@ jobs:
     steps:
       - checkout
       - run: docker build --rm=false -t avro2py .
-      - run: docker-compose run tests
       - run: docker-compose run pylint
-      - run: docker-compose run mypy
+      # - run: docker-compose run mypy
+      - run: docker-compose run tests
   deploy:
     machine:
       docker_layer_caching: false
