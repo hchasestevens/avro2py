@@ -34,7 +34,7 @@ def render_module(module: ast.Module) -> str:
 
 def render_ipython(node):
     """Convenience method for rendering AST node in IPython environment."""
-    from IPython.display import display, Code
+    from IPython.display import display, Code  # pylint: disable=import-error
     display(Code(render_module(node), language='python'))
 
 

@@ -11,7 +11,7 @@ def case_insensitive(cls):
     """
     @classmethod
     def get(cls_, value):
-        return cls_[value.upper().replace('-', '_')]
+        return cls_[value.upper().replace('-', '_')]  # pylint: disable=unsubscriptable-object
     cls.get = get
     return cls
 
@@ -107,7 +107,7 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
     """Parse JSON-represented avro schema into internal representation."""
     if isinstance(schema, str):
         with suppress(KeyError):
-            return Primitives.get(schema)
+            return Primitives.get(schema)  # pylint: disable=no-member
         return DefinedType(
             schema
             if '.' in schema or not parent_namespace
@@ -130,8 +130,8 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
 
     if 'logicalType' in schema:
         return LogicalType(
-            type=Primitives.get(type_name),
-            logical_type=LogicalTypes.get(schema['logicalType']),
+            type=Primitives.get(type_name),  # pylint: disable=no-member
+            logical_type=LogicalTypes.get(schema['logicalType']),  # pylint: disable=no-member
             precision=schema.get('precision', None),
             scale=schema.get('scale', None),
         )
@@ -196,7 +196,7 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
 
     with suppress(KeyError):
         # alternative representation permitted in http://avro.apache.org/docs/1.10.0/spec.html#schema_primitive
-        return Primitives.get(type_name)
+        return Primitives.get(type_name)  # pylint: disable=no-member
 
     return DefinedType(
         type_name
