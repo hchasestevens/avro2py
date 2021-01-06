@@ -76,7 +76,7 @@ def from_avro_dict(avro_dict: AvroDictType, record_type: type) -> NamedTuple:
             conversions[field_name] = from_avro_dict(value, record_type=annotation)
 
         elif annotation is UUID:
-            conversions[field_name] = UUID(value)
+            conversions[field_name] = UUID(value) if not isinstance(value, UUID) else value
 
         elif isinstance(annotation, EnumMeta):
             values_to_members = {
