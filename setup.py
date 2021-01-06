@@ -16,7 +16,7 @@ setup(
     ],
     platforms='any',
     extras_require=extras_require,
-    version="0.0.1",
+    version="0.0.2",
     description='Avro codegen for Python 3.6+',
     author='H. Chase Stevens',
     author_email='chase@chasestevens.com',
