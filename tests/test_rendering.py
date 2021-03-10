@@ -1,4 +1,5 @@
 """Tests for avro2py/rendering.py"""
+import ast
 import io
 import sys
 import json
@@ -90,3 +91,20 @@ def test_example_message_round_trippable(data):
     )
 
     assert round_tripped_example_avro_model == original_example_avro_model
+
+
+def test_module_package_rendering_collision():
+    """Verify that rendering functions properly when a module shares a name with a package."""
+    modules = [
+        ("foo.bar", ast.parse("qux = 1")),
+        ("foo", ast.parse("quz = 1")),
+    ]
+    expected_paths = {
+        Path("foo/bar.py"),
+        Path("foo/__init__.py"),
+    }
+
+    results = rendering.render_modules(modules)
+    produced_paths = set(results)
+
+    assert produced_paths == expected_paths

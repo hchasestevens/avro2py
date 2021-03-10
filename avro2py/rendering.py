@@ -55,4 +55,12 @@ def render_modules(modules: Iterable[Tuple[str, ast.Module]]) -> Dict[Path, str]
         contents = f'''"""`{'.'.join(discovered_directory.parts)}` namespace."""\n'''
         rendered[discovered_directory / '__init__.py'] = contents
 
+    init_paths = [path for path in rendered if path.name == '__init__.py']
+    for init_path in init_paths:
+        conflicting_path = init_path.parent.with_suffix(".py")
+        if conflicting_path not in rendered:
+            continue
+        rendered[init_path] = rendered[conflicting_path]
+        del rendered[conflicting_path]
+
     return rendered

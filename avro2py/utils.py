@@ -3,11 +3,19 @@ import decimal
 import datetime
 from enum import EnumMeta, Enum
 from functools import reduce
+from pathlib import Path
 from typing import NamedTuple, Dict, Union, _Union, Any, Callable, get_type_hints
 from uuid import UUID
 
 import avro.io
 import avro.schema
+
+
+PACKAGE_DIR = Path(__file__).parent
+VERSION_PATH = PACKAGE_DIR / 'VERSION'
+with VERSION_PATH.open('r') as f:
+    VERSION = f.read().strip()
+
 
 AvroDictType = Dict[
     str,
