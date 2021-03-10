@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from setuptools import setup, find_packages
 
 extras_require = {
@@ -8,15 +10,21 @@ extras_require = {
     ],
 }
 
+ROOT = Path(__file__).parent
+VERSION_PATH = ROOT / 'avro2py' / 'VERSION'
+with VERSION_PATH.open('r') as f:
+    VERSION = f.read().strip()
+
 packages = find_packages(exclude=("tests", "tests.*"))
 setup(
     name='avro2py',
     packages=[
         'avro2py',
     ],
+    package_data={'avro2py': ['VERSION']},
     platforms='any',
     extras_require=extras_require,
-    version="0.0.2",
+    version=VERSION,
     description='Avro codegen for Python 3.6+',
     author='H. Chase Stevens',
     author_email='chase@chasestevens.com',
