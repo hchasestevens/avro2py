@@ -4,7 +4,7 @@ import datetime
 from enum import EnumMeta, Enum
 from functools import reduce
 from pathlib import Path
-from typing import NamedTuple, Dict, Union, _Union, Any, Callable, get_type_hints
+from typing import NamedTuple, Dict, Union, Any, Callable, get_type_hints
 from uuid import UUID
 
 import avro.io
@@ -69,7 +69,7 @@ def from_avro_dict(avro_dict: AvroDictType, record_type: type) -> NamedTuple:
     for field_name, value in avro_dict.items():
         annotation = annotations[field_name]
 
-        if getattr(annotation, '__class__') is _Union:
+        if is_type_union(annotation):
             annotation_record_types = (
                 t
                 for t in annotation.__args__
@@ -95,3 +95,9 @@ def from_avro_dict(avro_dict: AvroDictType, record_type: type) -> NamedTuple:
 
     new_dict = {**avro_dict, **conversions}
     return record_type(**new_dict)
+
+
+def is_type_union(type):
+    """Return True if the type annotation is Union"""
+    # every type annotation has __origin__ attribute
+    return hasattr(type, '__origin__') and type.__origin__ is Union
