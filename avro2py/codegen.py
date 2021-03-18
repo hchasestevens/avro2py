@@ -168,7 +168,7 @@ def record_to_class(record: Record) -> ResolvedClassResult:
     class_body.append(
         ast.Assign(  # _original_schema = "..."
             targets=[ast.Name(id='_original_schema')],
-            value=ast.Str(s=json.dumps(record.original_schema))
+            value=ast.Str(s=json.dumps(record.resolved_schema))
         )
     )
 
@@ -408,6 +408,25 @@ class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
             return rewriter.visit(node)
 
 
+def resolve_schema_reference(schema: Record, schemas : List[Record]):
+    """Substitute the schema reference with the definition.""" 
+    if not schemas:
+        return
+
+    for field in schema.resolved_schema['fields']:
+        if isinstance(field['type'], str) and field['type'].find('.') >= 0:
+            ref_schema_name = field['type'].split('.')[-1]
+            is_resolved = False
+            for s in schemas:
+                if s.name == ref_schema_name:
+                    resolve_schema_reference(s, schemas)
+                    field['type'] = s.resolved_schema
+                    is_resolved = True
+                    break
+            if not is_resolved:
+                raise ValueError(f'Unable to resolve schema reference {field["type"]} in {schema.namespace}.{schema.name}')
+
+
 def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
     """Convert internal Record representations into renderable AST module nodes."""
     namespace_nodes = defaultdict(lambda: Namespace(
@@ -431,6 +450,8 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
         if converter is None:
             raise ValueError(f"Unknown schema type: `{type(schema)}` (in schema `{schema}`)")
 
+        if isinstance(schema, Record):
+            resolve_schema_reference(schema, schemas)
         result = converter(schema)
         resolved_class = result.resolved_class
         parent_namespace.node.body.append(resolved_class)
