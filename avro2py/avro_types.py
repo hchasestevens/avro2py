@@ -59,13 +59,17 @@ AvroType = Union[AvroPrimitives, NamedTuple, List, DefinedType]
 
 class Record(NamedTuple):
     """http://avro.apache.org/docs/1.10.0/spec.html#Records"""
-    original_schema: Dict
+    schema: Dict
     name: str
     namespace: str
     fields: List['Field']
     doc: Optional[str] = None
     aliases: List[str] = []
 
+    @property
+    def fully_qualified_name(self):
+        """Return fully qualified name."""
+        return f'{self.namespace}.{self.name}'
 
 class Field(NamedTuple):
     name: str
@@ -80,6 +84,11 @@ class Enum(NamedTuple):
     aliases: List[str] = []
     doc: Optional[str] = None
     default: Optional[str] = None
+
+    @property
+    def fully_qualified_name(self):
+        """Return fully qualified name."""
+        return f'{self.namespace}.{self.name}'
 
 
 class Array(NamedTuple):
@@ -174,7 +183,7 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
 
     if type_name == 'record':
         return Record(
-            original_schema=schema,
+            schema=schema,
             name=schema['name'],
             namespace=namespace,
             fields=[

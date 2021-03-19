@@ -38,10 +38,35 @@ def test_bridge_namespaces(from_namespace, to_namespace, name, expected):
 
 def test_populate_namespaces_produces_roundtrippable_modules():
     populated_schemas = codegen.populate_namespaces(
-        parse_into_types(schema)
-        for schema in TEST_SCHEMAS
+        [parse_into_types(schema) for schema in TEST_SCHEMAS]
     )
 
     for _, module in populated_schemas:
         source = astor.to_source(module)
         assert isinstance(ast.parse(source), ast.Module)
+
+
+@pytest.mark.parametrize('namespace, field_name', [('marketprice.messages.events', 'metadata'), ('foo.events', 'foo_metadata'), ('foo.events', 'duplicate_foo_metadata')])
+def test_schema_reference_resolution(namespace, field_name):
+    """Test if the schema references in an avro schema is expanded properly"""
+
+    parsed_schemas = [parse_into_types(schema) for schema in TEST_SCHEMAS]
+    list(codegen.populate_namespaces(parsed_schemas))  # since it produces generator
+    
+    ad_connected_schema, = (
+        schema
+        for schema in parsed_schemas
+        if schema.fully_qualified_name == 'marketprice.messages.events.advertising.AdConnected'
+    )
+
+    field, = (
+        f
+        for f in ad_connected_schema.schema['fields']
+        if f['name'] == field_name
+    )
+
+    assert all([
+        isinstance(field['type'], dict),
+        field['type']['name'] == 'EventMetadata',
+        field['type']['namespace'] == namespace
+    ])

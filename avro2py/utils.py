@@ -76,7 +76,7 @@ def from_avro_dict(avro_dict: AvroDictType, record_type: type) -> NamedTuple:
                 if hasattr(t, '_asdict')
             )
             for annotation_record_type in annotation_record_types:
-                parsed_schema = avro.schema.parse(annotation_record_type._original_schema)
+                parsed_schema = avro.schema.parse(annotation_record_type._schema)
                 if avro.io.validate(parsed_schema, value):
                     annotation = annotation_record_type
 
