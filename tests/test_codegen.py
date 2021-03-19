@@ -38,10 +38,31 @@ def test_bridge_namespaces(from_namespace, to_namespace, name, expected):
 
 def test_populate_namespaces_produces_roundtrippable_modules():
     populated_schemas = codegen.populate_namespaces(
-        parse_into_types(schema)
-        for schema in TEST_SCHEMAS
+        [parse_into_types(schema) for schema in TEST_SCHEMAS]
     )
 
     for _, module in populated_schemas:
         source = astor.to_source(module)
         assert isinstance(ast.parse(source), ast.Module)
+
+
+def test_schema_reference_resolution():
+    parsed_schemas = [parse_into_types(schema) for schema in TEST_SCHEMAS]
+    list(codegen.populate_namespaces(parsed_schemas))  # since it produces generator
+
+    ad_connected_schema = None
+    for ps in parsed_schemas:
+        if ps.fully_qualified_name() == 'marketprice.messages.events.advertising.AdConnected':
+            ad_connected_schema = ps
+            break
+    assert ad_connected_schema is not None
+
+    for field in ad_connected_schema.resolved_schema['fields']:
+        if field['name'] == 'metadata':
+            assert isinstance(field['type'], dict)
+            assert field['type']['name'] == 'EventMetadata'
+            assert field['type']['namespace'] == 'marketprice.messages.events'
+        elif field['name'] == 'foo_metadata':
+            assert isinstance(field['type'], dict)
+            assert field['type']['name'] == 'EventMetadata'
+            assert field['type']['namespace'] == 'foo.events'

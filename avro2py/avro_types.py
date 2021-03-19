@@ -1,5 +1,6 @@
 """Representation of avro schema types."""
 from contextlib import suppress
+from copy import deepcopy
 from enum import Enum as _Enum, auto, unique
 from typing import NamedTuple, List, Union, Optional, Any, NewType, Dict
 
@@ -67,6 +68,9 @@ class Record(NamedTuple):
     doc: Optional[str] = None
     aliases: List[str] = []
 
+    def fully_qualified_name(self):
+        """Return fully qualified name."""
+        return f'{self.namespace}.{self.name}'
 
 class Field(NamedTuple):
     name: str
@@ -176,7 +180,7 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
     if type_name == 'record':
         return Record(
             original_schema=schema,
-            resolved_schema=schema,
+            resolved_schema=deepcopy(schema),
             name=schema['name'],
             namespace=namespace,
             fields=[

@@ -39,6 +39,7 @@ LOGICAL_TYPE_MAPPINGS = {
 
 
 NODE_CLASS_CONVERTERS = {}
+RESOLVED_SCHEMAS = set()  # To cache resolved schemas
 
 
 def node_converter(fn):
@@ -410,25 +411,27 @@ class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
 
 def resolve_schema_reference(schema: Record, schemas : List[Record]):
     """Substitute the schema reference with the definition.""" 
-    if not schemas:
+    if not schemas or schema.fully_qualified_name() in RESOLVED_SCHEMAS:
         return
 
     for field in schema.resolved_schema['fields']:
-        if isinstance(field['type'], str) and field['type'].find('.') >= 0:
-            ref_schema_name = field['type'].split('.')[-1]
+        if isinstance(field['type'], str) and '.' in field['type']:
             is_resolved = False
             for s in schemas:
-                if s.name == ref_schema_name:
+                if field['type'] == s.fully_qualified_name():
                     resolve_schema_reference(s, schemas)
                     field['type'] = s.resolved_schema
                     is_resolved = True
                     break
             if not is_resolved:
                 raise ValueError(f'Unable to resolve schema reference {field["type"]} in {schema.namespace}.{schema.name}')
+            RESOLVED_SCHEMAS.add(s.fully_qualified_name())
 
 
 def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
     """Convert internal Record representations into renderable AST module nodes."""
+    RESOLVED_SCHEMAS = set()  # initialize (or invalidate existing) the cache.
+
     namespace_nodes = defaultdict(lambda: Namespace(
         node=ast.Module(body=[]),
         imports=[],
