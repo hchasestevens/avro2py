@@ -46,23 +46,27 @@ def test_populate_namespaces_produces_roundtrippable_modules():
         assert isinstance(ast.parse(source), ast.Module)
 
 
-def test_schema_reference_resolution():
+@pytest.mark.parametrize('namespace, field_name', [('marketprice.messages.events', 'metadata'), ('foo.events', 'foo_metadata')])
+def test_schema_reference_resolution(namespace, field_name):
+    """Test if the schema references in an avro schema is expanded properly"""
+
     parsed_schemas = [parse_into_types(schema) for schema in TEST_SCHEMAS]
     list(codegen.populate_namespaces(parsed_schemas))  # since it produces generator
+    
+    ad_connected_schema, = (
+        schema
+        for schema in parsed_schemas
+        if schema.fully_qualified_name == 'marketprice.messages.events.advertising.AdConnected'
+    )
 
-    ad_connected_schema = None
-    for ps in parsed_schemas:
-        if ps.fully_qualified_name() == 'marketprice.messages.events.advertising.AdConnected':
-            ad_connected_schema = ps
-            break
-    assert ad_connected_schema is not None
+    field, = (
+        f
+        for f in ad_connected_schema.schema['fields']
+        if f['name'] == field_name
+    )
 
-    for field in ad_connected_schema.resolved_schema['fields']:
-        if field['name'] == 'metadata':
-            assert isinstance(field['type'], dict)
-            assert field['type']['name'] == 'EventMetadata'
-            assert field['type']['namespace'] == 'marketprice.messages.events'
-        elif field['name'] == 'foo_metadata':
-            assert isinstance(field['type'], dict)
-            assert field['type']['name'] == 'EventMetadata'
-            assert field['type']['namespace'] == 'foo.events'
+    assert all([
+        isinstance(field['type'], dict),
+        field['type']['name'] == 'EventMetadata',
+        field['type']['namespace'] == namespace
+    ])

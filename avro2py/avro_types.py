@@ -1,6 +1,5 @@
 """Representation of avro schema types."""
 from contextlib import suppress
-from copy import deepcopy
 from enum import Enum as _Enum, auto, unique
 from typing import NamedTuple, List, Union, Optional, Any, NewType, Dict
 
@@ -60,14 +59,14 @@ AvroType = Union[AvroPrimitives, NamedTuple, List, DefinedType]
 
 class Record(NamedTuple):
     """http://avro.apache.org/docs/1.10.0/spec.html#Records"""
-    original_schema: Dict
-    resolved_schema: Dict  # after resolving schema reference from original_schema
+    schema: Dict
     name: str
     namespace: str
     fields: List['Field']
     doc: Optional[str] = None
     aliases: List[str] = []
 
+    @property
     def fully_qualified_name(self):
         """Return fully qualified name."""
         return f'{self.namespace}.{self.name}'
@@ -85,6 +84,11 @@ class Enum(NamedTuple):
     aliases: List[str] = []
     doc: Optional[str] = None
     default: Optional[str] = None
+
+    @property
+    def fully_qualified_name(self):
+        """Return fully qualified name."""
+        return f'{self.namespace}.{self.name}'
 
 
 class Array(NamedTuple):
@@ -179,8 +183,7 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
 
     if type_name == 'record':
         return Record(
-            original_schema=schema,
-            resolved_schema=deepcopy(schema),
+            schema=schema,
             name=schema['name'],
             namespace=namespace,
             fields=[

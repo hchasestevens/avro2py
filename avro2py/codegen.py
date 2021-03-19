@@ -168,8 +168,8 @@ def record_to_class(record: Record) -> ResolvedClassResult:
     class_body.extend(fields)
     class_body.append(
         ast.Assign(  # _original_schema = "..."
-            targets=[ast.Name(id='_original_schema')],
-            value=ast.Str(s=json.dumps(record.resolved_schema))
+            targets=[ast.Name(id='_schema')],
+            value=ast.Str(s=json.dumps(record.schema))
         )
     )
 
@@ -310,7 +310,7 @@ def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, En
 
     if isinstance(field_type, (Record, Enum)):
         if field_type.namespace:
-            return ast.Str(s="{0.namespace}.{0.name}".format(field_type))  # this is mutated/imported at a later date
+            return ast.Str(s=field_type.fully_qualified_name)  # this is mutated/imported at a later date
         # TODO - is this case legal/reachable...?
         return ast.Str(s=field_type.name)
 
@@ -411,21 +411,19 @@ class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
 
 def resolve_schema_reference(schema: Record, schemas : List[Record]):
     """Substitute the schema reference with the definition.""" 
-    if not schemas or schema.fully_qualified_name() in RESOLVED_SCHEMAS:
+    if not schemas or schema.fully_qualified_name in RESOLVED_SCHEMAS:
         return
 
-    for field in schema.resolved_schema['fields']:
+    for field in schema.schema['fields']:
         if isinstance(field['type'], str) and '.' in field['type']:
-            is_resolved = False
             for s in schemas:
-                if field['type'] == s.fully_qualified_name():
+                if field['type'] == s.fully_qualified_name:
                     resolve_schema_reference(s, schemas)
-                    field['type'] = s.resolved_schema
-                    is_resolved = True
+                    field['type'] = s.schema
                     break
-            if not is_resolved:
-                raise ValueError(f'Unable to resolve schema reference {field["type"]} in {schema.namespace}.{schema.name}')
-            RESOLVED_SCHEMAS.add(s.fully_qualified_name())
+            else:
+                raise ValueError(f'Unable to resolve schema reference {field["type"]} in {schema.fully_qualified_name}')
+            RESOLVED_SCHEMAS.add(s.fully_qualified_name)
 
 
 def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
@@ -443,8 +441,7 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
     frontier = sorted(schemas, key=frontier_sorting_key)
     while frontier:
         schema = frontier.pop()
-        schema_fully_qualified_name = f'{schema.namespace}.{schema.name}'
-        if schema_fully_qualified_name in namespace_nodes:
+        if schema.fully_qualified_name in namespace_nodes:
             continue
 
         parent_namespace = namespace_nodes[schema.namespace]
@@ -460,7 +457,7 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
         parent_namespace.node.body.append(resolved_class)
         parent_namespace.imports.extend(result.imports)
         frontier.extend(result.new_frontier)
-        namespace_nodes[schema_fully_qualified_name] = Namespace(
+        namespace_nodes[schema.fully_qualified_name] = Namespace(
             node=resolved_class,
             imports=parent_namespace.imports  # n.b. multiple pointers to same object
         )
