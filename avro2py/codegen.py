@@ -7,7 +7,7 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from textwrap import wrap
-from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
+from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict, Set
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -39,7 +39,6 @@ LOGICAL_TYPE_MAPPINGS = {
 
 
 NODE_CLASS_CONVERTERS = {}
-RESOLVED_SCHEMAS = set()  # To cache resolved schemas
 
 
 def node_converter(fn):
@@ -409,26 +408,26 @@ class RewriteCrossReferenceAnnotations(ModuleAwareNodeTransformer):
             return rewriter.visit(node)
 
 
-def resolve_schema_reference(schema: Record, schemas : List[Record]):
+def resolve_schema_reference(schema: Record, schemas : List[Record], cache : Set):
     """Substitute the schema reference with the definition.""" 
-    if not schemas or schema.fully_qualified_name in RESOLVED_SCHEMAS:
+    if not schemas or schema.fully_qualified_name in cache:
         return
 
     for field in schema.schema['fields']:
         if isinstance(field['type'], str) and '.' in field['type']:
             for s in schemas:
                 if field['type'] == s.fully_qualified_name:
-                    resolve_schema_reference(s, schemas)
+                    resolve_schema_reference(s, schemas, cache)
                     field['type'] = s.schema
                     break
             else:
                 raise ValueError(f'Unable to resolve schema reference {field["type"]} in {schema.fully_qualified_name}')
-            RESOLVED_SCHEMAS.add(s.fully_qualified_name)
+            cache.add(s.fully_qualified_name)
 
 
 def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Module], None, None]:
     """Convert internal Record representations into renderable AST module nodes."""
-    RESOLVED_SCHEMAS = set()  # initialize (or invalidate existing) the cache.
+    resolved_schema_cache = set()  # initialize (or invalidate existing) the cache.
 
     namespace_nodes = defaultdict(lambda: Namespace(
         node=ast.Module(body=[]),
@@ -451,7 +450,7 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
             raise ValueError(f"Unknown schema type: `{type(schema)}` (in schema `{schema}`)")
 
         if isinstance(schema, Record):
-            resolve_schema_reference(schema, schemas)
+            resolve_schema_reference(schema, schemas, resolved_schema_cache)
         result = converter(schema)
         resolved_class = result.resolved_class
         parent_namespace.node.body.append(resolved_class)

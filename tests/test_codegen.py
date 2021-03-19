@@ -46,7 +46,7 @@ def test_populate_namespaces_produces_roundtrippable_modules():
         assert isinstance(ast.parse(source), ast.Module)
 
 
-@pytest.mark.parametrize('namespace, field_name', [('marketprice.messages.events', 'metadata'), ('foo.events', 'foo_metadata')])
+@pytest.mark.parametrize('namespace, field_name', [('marketprice.messages.events', 'metadata'), ('foo.events', 'foo_metadata'), ('foo.events', 'duplicate_foo_metadata')])
 def test_schema_reference_resolution(namespace, field_name):
     """Test if the schema references in an avro schema is expanded properly"""
 
