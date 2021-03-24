@@ -191,9 +191,6 @@ def parse_into_types(schema: Union[Dict[str, Any], str, List], parent_namespace:
             aliases=schema.get('aliases', [])
         )
 
-    if set(schema.keys()) != {'type'}:
-        raise ValueError(f"Unknown type: `{type_name}` (in schema: `{repr(schema)}`)")
-
     with suppress(KeyError):
         # alternative representation permitted in http://avro.apache.org/docs/1.10.0/spec.html#schema_primitive
         return Primitives.get(type_name)  # pylint: disable=no-member
