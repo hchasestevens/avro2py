@@ -10,11 +10,15 @@ from example.marketprice.messages.wallyworld.bidder import (
 )
 
 
-@given(st.integers(), st.text(), st.decimals())
-def test_to_avro_dict_nested_named_tuples(random_int, item_id, bid):
-    requested_at = datetime.datetime.utcnow()
+@given(
+    random_int=st.integers(), 
+    item_id=st.text(), 
+    bid=st.decimals(),
+    requested_at=st.datetimes(),
+    users_lined=st.lists(st.uuids(), min_size=3, max_size=3)
+)
+def test_to_avro_dict_nested_named_tuples(random_int, item_id, bid, requested_at, users_lined):
     campaign_id = ad_group_id = advertiser_id = random_int
-    users_lined = [uuid.uuid4() for _ in range(3)]
     payload = WallyworldAdGroupStructure(
         advertiserId=advertiser_id,
         campaignId=campaign_id,
