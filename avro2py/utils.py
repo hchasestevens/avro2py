@@ -53,7 +53,7 @@ def _safe_convert_namedtuple(v: Union[NamedTuple, Any]) -> Union[AvroDictType, A
 
 @_CONVERTERS_TO_AVRO.append
 def _safe_convert_list(v: Union[List, Any]) -> Union[AvroDictType, Any]:
-    if isinstance(v, list) and hasattr(v[0], '_asdict'):
+    if isinstance(v, list) and len(v) and hasattr(v[0], '_asdict'):
         return [to_avro_dict(ele) for ele in v]
     return v
 
