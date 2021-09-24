@@ -912,6 +912,100 @@
   },
   {
     "type": "record",
+    "name": "WallyworldAdGroupStructure",
+    "namespace": "marketprice.messages.wallyworld.bidder",
+    "doc": "Wallyworld Ad Group Structure for bidder transmission: wallyworld-sponsored-products-api/entity/v1/parsed-structure/ad-group",
+    "fields": [
+      {
+        "name": "advertiserId",
+        "type": "long"
+      },
+      {
+        "name": "campaignId",
+        "type": "long"
+      },
+      {
+        "name": "adGroupId",
+        "type": "long"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "users_linked",
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "logicalType": "uuid"
+          }
+        }
+      },
+      {
+        "name": "adItems",
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "record",
+            "name": "WallyworldAdItem",
+            "doc": "Wallyworld Ad Item Snapshot for bidder: wallyworld-sponsored-products-api/entity/v1/parsed-bidder/ad-item",
+            "fields": [
+              {
+                "name": "advertiserId",
+                "type": "long"
+              },
+              {
+                "name": "campaignId",
+                "type": "long"
+              },
+              {
+                "name": "adGroupId",
+                "type": "long"
+              },
+              {
+                "name": "adItemId",
+                "type": "long"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "type": "string"
+              },
+              {
+                "name": "bid",
+                "type": {
+                  "type": "bytes",
+                  "logicalType": "decimal",
+                  "precision": 12,
+                  "scale": 4
+                }
+              },
+              {
+                "name": "requestedAt",
+                "type": {
+                  "type": "long",
+                  "logicalType": "timestamp-millis"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "requestedAt",
+        "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
     "name": "WallyworldAdGroupReport",
     "namespace": "marketprice.messages.wallyworld.bidder",
     "doc": "Wallyworld Ad Group Report for bidder: wallyworld-sponsored-products-api/reports/v1/parsed-bidder/ad-group",
