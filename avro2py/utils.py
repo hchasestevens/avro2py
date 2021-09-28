@@ -4,7 +4,7 @@ import datetime
 from enum import EnumMeta, Enum
 from functools import reduce
 from pathlib import Path
-from typing import NamedTuple, Dict, Union, Any, Callable, get_type_hints
+from typing import NamedTuple, Dict, Union, Any, Callable, get_type_hints, List
 from uuid import UUID
 
 import avro.io
@@ -48,6 +48,13 @@ def _safe_convert_uuid(v: Union[UUID, Any]) -> Union[bytes, any]:
 def _safe_convert_namedtuple(v: Union[NamedTuple, Any]) -> Union[AvroDictType, Any]:
     if hasattr(v, '_asdict'):
         return to_avro_dict(v)
+    return v
+
+
+@_CONVERTERS_TO_AVRO.append
+def _safe_convert_list(v: Union[List, Any]) -> Union[AvroDictType, Any]:
+    if isinstance(v, list) and len(v) and hasattr(v[0], '_asdict'):
+        return [to_avro_dict(ele) for ele in v]
     return v
 
 
