@@ -8,6 +8,7 @@ from collections import defaultdict
 from contextlib import contextmanager
 from textwrap import wrap
 from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
+from collections import deque
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -418,9 +419,9 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
     def frontier_sorting_key(s):
         return s.namespace not in namespace_nodes, s.namespace
 
-    frontier = sorted(schemas, key=frontier_sorting_key)
+    frontier = deque(sorted(schemas, key=frontier_sorting_key))
     while frontier:
-        schema = frontier.pop()
+        schema = frontier.popleft()
         schema_fully_qualified_name = f'{schema.namespace}.{schema.name}'
         if schema_fully_qualified_name in namespace_nodes:
             continue
@@ -441,7 +442,7 @@ def populate_namespaces(schemas: List[Record]) -> Generator[Tuple[str, ast.Modul
             imports=parent_namespace.imports  # n.b. multiple pointers to same object
         )
 
-        frontier = sorted(frontier, key=frontier_sorting_key)
+        frontier = deque(sorted(frontier, key=frontier_sorting_key))
 
     # Sometimes there are implicit namespaces that are children of classes, and
     # hence themselves need to be classes - but have been instantiated as

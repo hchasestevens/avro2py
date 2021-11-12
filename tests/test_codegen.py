@@ -45,3 +45,24 @@ def test_populate_namespaces_produces_roundtrippable_modules():
     for _, module in populated_schemas:
         source = astor.to_source(module)
         assert isinstance(ast.parse(source), ast.Module)
+
+
+def test_inline_avro_schema_of_nested_record():
+    populated_schemas = codegen.populate_namespaces(
+        parse_into_types(schema)
+        for schema in TEST_SCHEMAS
+    )
+    adgroup_created_class_def, = (
+        element
+        for schema in populated_schemas
+        for element in schema[1].body
+        if hasattr(element, 'name') and element.name.endswith('AdgroupCreated')
+    )
+
+    # get the variable definition of _original_schema 
+    t, = (obj for obj in adgroup_created_class_def.body if isinstance(obj, ast.Assign))
+    _original_schema = t.value.value
+    # verify that the avro schema of AdGroupCreated should not have not reference.
+    schema_dict = json.loads(_original_schema)
+    advertising_type = schema_dict['fields'][0]
+    assert isinstance(advertising_type['type'], dict)
