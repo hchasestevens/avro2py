@@ -1816,15 +1816,14 @@
     "namespace": "marketprice.messages.bid",
     "fields": [
       {
-        "name": "advertising_type",
+        "name": "status",
         "type": {
           "type": "enum",
-          "name": "AdvertisingType",
-          "doc": "advertising type can be one of SponsoredProducts, SponsoredBrands, SponsoredDisplay",
+          "name": "Status",
+          "doc": "status can be one of Active, Paused",
           "symbols": [
-            "SponsoredProducts",
-            "SponsoredBrands",
-            "SponsoredDisplay"
+            "Active",
+            "Paused"
           ]
         }
       }
@@ -1832,12 +1831,11 @@
   },
   {
     "type": "enum",
-    "name": "AdvertisingType",
+    "name": "Status",
     "namespace": "marketprice.messages.bid",
     "symbols": [
-      "SponsoredProducts",
-      "SponsoredBrands",
-      "SponsoredDisplay"
+      "Active",
+      "Paused"
     ]
   },
   {
@@ -1846,15 +1844,14 @@
     "namespace": "marketprice.messages.bid",
     "fields": [
       {
-        "name": "advertising_type",
+        "name": "status",
         "type": {
           "type": "enum",
-          "name": "AdvertisingType",
-          "doc": "advertising type can be one of SponsoredProducts, SponsoredBrands, SponsoredDisplay",
+          "name": "Status",
+          "doc": "status can be one of Active, Paused",
           "symbols": [
-            "SponsoredProducts",
-            "SponsoredBrands",
-            "SponsoredDisplay"
+            "Active",
+            "Paused"
           ]
         }
       },
@@ -1865,10 +1862,32 @@
           "name": "AdgroupCreated",
           "fields": [
             {
-              "name": "advertising_type",
-              "type": "AdvertisingType"
+              "name": "status",
+              "type": "Status"
             }
           ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "WallyworldEntity",
+    "namespace": "marketprice.messages.bid",
+    "fields": [
+      {
+        "name": "tags",
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "enum",
+            "name": "Status",
+            "doc": "advertising type can be one of Active, Paused",
+            "symbols": [
+              "Active",
+              "Paused"
+            ]
+          }
         }
       }
     ]

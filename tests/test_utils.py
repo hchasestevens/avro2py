@@ -2,6 +2,7 @@
 from hypothesis import given, strategies as st
 
 from avro2py.utils import to_avro_dict
+from example.marketprice.messages.bid import Status, WallyworldEntity
 from example.marketprice.messages.wallyworld.bidder import (
     WallyworldAdGroupStructure, WallyworldAdItem
 )
@@ -85,3 +86,12 @@ def test_to_avro_dict_nested_named_tuples(random_int, requested_at, users_linked
     assert value["advertiserId"] == advertiser_id
     assert value["campaignId"] == campaign_id
     assert value["users_linked"] == users_linked
+
+
+def test_to_avro_dict_list_of_enum():
+    payload = WallyworldEntity(
+        tags=[Status.ACTIVE, Status.PAUSED]
+    )
+    value = to_avro_dict(payload)
+    assert isinstance(value, dict)
+    assert isinstance(value['tags'][0], str)
