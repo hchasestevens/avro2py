@@ -56,7 +56,7 @@ def _safe_convert_list(v: Union[List, Any]) -> Union[AvroDictType, Any]:
     if isinstance(v, list) and len(v):
         if hasattr(v[0], '_asdict'):
             return [to_avro_dict(ele) for ele in v]
-        elif isinstance(getattr(v[0], '__class__', None), EnumMeta):
+        else:
             return [_convert_types_to_avro(ele) for ele in v]
     return v
 

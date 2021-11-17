@@ -15,7 +15,7 @@ from example.marketprice.messages.wallyworld.bidder import (
     requested_at=st.datetimes(),
     users_linked=st.lists(st.uuids(), min_size=0, max_size=33)
 )
-def test_to_avro_dict_nested_named_tuples(random_int, item_id, bid, requested_at, users_linked):
+def test_to_avro_dict_nested_named_tuples_value(random_int, item_id, bid, requested_at, users_linked):
     campaign_id = ad_group_id = advertiser_id = random_int
     payload = WallyworldAdGroupStructure(
         advertiserId=advertiser_id,
@@ -41,7 +41,7 @@ def test_to_avro_dict_nested_named_tuples(random_int, item_id, bid, requested_at
         "campaignId": advertiser_id,
         "adGroupId": advertiser_id,
         "state": "Paused",
-        "users_linked": users_linked,
+        "users_linked": [str(u) for u in users_linked],
         "adItems": [
             {
                 "advertiserId": advertiser_id,
@@ -85,7 +85,7 @@ def test_to_avro_dict_nested_named_tuples(random_int, requested_at, users_linked
 
     assert value["advertiserId"] == advertiser_id
     assert value["campaignId"] == campaign_id
-    assert value["users_linked"] == users_linked
+    assert value["users_linked"] == [str(u) for u in users_linked]
 
 
 def test_to_avro_dict_list_of_enum():
@@ -93,5 +93,4 @@ def test_to_avro_dict_list_of_enum():
         tags=[Status.ACTIVE, Status.PAUSED]
     )
     value = to_avro_dict(payload)
-    assert isinstance(value, dict)
     assert isinstance(value['tags'][0], str)
