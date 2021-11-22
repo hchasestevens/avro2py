@@ -78,6 +78,8 @@ def test_example_message_round_trippable(data):
     note(example_model_dict)
     buffer = io.BytesIO()
     encoder = avro.io.BinaryEncoder(buffer)
+    print('===============', json.dumps(EXAMPLE_AVRO_MODEL_SCHEMA))
+    print('===============ex', example_model_dict)
     datum_writer = avro.io.DatumWriter(avro_parsed_schema)
     datum_writer.write(example_model_dict, encoder)
     buffer.seek(0)

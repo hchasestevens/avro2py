@@ -61,7 +61,7 @@ def test_inline_avro_schema_of_nested_record():
 
     # get the variable definition of _original_schema 
     t, = (obj for obj in adgroup_created_class_def.body if isinstance(obj, ast.Assign))
-    _original_schema = t.value.value
+    _original_schema = t.value.s
     # verify that the avro schema of AdGroupCreated should not have not reference.
     schema_dict = json.loads(_original_schema)
     advertising_type = schema_dict['fields'][0]
