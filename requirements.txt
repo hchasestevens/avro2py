@@ -1,4 +1,4 @@
 astor
-avro
+avro==1.10.2
 black
 hypothesis
