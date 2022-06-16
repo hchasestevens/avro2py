@@ -338,8 +338,7 @@ class ModuleAwareNodeTransformer(ast.NodeTransformer):
 class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
     """Used to rewrite deferred type annotations within an AnnAssign node."""
 
-    @staticmethod
-    def bridge_namespaces(from_namespace: List[str], to_namespace: List[str], target_name: List[str]) \
+    def bridge_namespaces(self, from_namespace: List[str], to_namespace: List[str], target_name: List[str]) \
             -> Tuple[ast.Str, Optional[ast.ImportFrom]]:
         """
         Given two module namespaces and a desired annotation, find the path to
@@ -363,10 +362,16 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
         remaining_to_components = [c for c in paired_remaining_to_components if c is not None]
 
         if remaining_from_components:
+            level = len(remaining_from_components)
+            for namespace_name in self.namespaces.keys():
+                namespace_parts = namespace_name.split('.')
+                if namespace_parts[0:len(from_namespace)] == from_namespace and len(namespace_parts) > len(from_namespace):
+                    level += 1
+                    break
             import_node = ast.ImportFrom(
                 module='.'.join(remaining_to_components),
                 names=[ast.alias(name=target_name[0], asname=None)],
-                level=len(remaining_from_components)
+                level=level
             )
             name = ast.Str(s='.'.join(target_name))
         else:

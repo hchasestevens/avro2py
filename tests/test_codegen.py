@@ -14,15 +14,22 @@ TEST_PATH = Path(os.path.dirname(__file__))
 TEST_SCHEMAS = json.load((TEST_PATH / 'sample_schema.avsc').open('r'))
 
 
-@pytest.mark.parametrize('from_namespace, to_namespace, name, expected', [
-    ('marketprice.messages.nile.mws', 'marketprice.messages.nile.mws', 'GetMatchingProductForId.ImageData', ('GetMatchingProductForId.ImageData', None)),
-    ('marketprice.messages.historical.replay', 'marketprice.pubsub', 'S3FileDescriptor', ('S3FileDescriptor', ast.ImportFrom(module='pubsub', names=[ast.alias(name='S3FileDescriptor', asname=None)], level=3))),
-    ('marketprice.messages.targeting_recommendation_engine', 'marketprice.messages.targeting_recommendation_engine', 'TargetingRecommendation.Predicate', ('TargetingRecommendation.Predicate', None))
+@pytest.mark.parametrize('from_namespace, to_namespace, other_namespaces, name, expected', [
+    ('marketprice.messages.nile.mws', 'marketprice.messages.nile.mws', [], 'GetMatchingProductForId.ImageData', ('GetMatchingProductForId.ImageData', None)),
+    ('marketprice.messages.historical.replay', 'marketprice.pubsub', [], 'S3FileDescriptor', ('S3FileDescriptor', ast.ImportFrom(module='pubsub', names=[ast.alias(name='S3FileDescriptor', asname=None)], level=3))),
+    ('marketprice.messages.targeting_recommendation_engine', 'marketprice.messages.targeting_recommendation_engine', [], 'TargetingRecommendation.Predicate', ('TargetingRecommendation.Predicate', None)),
+    ('foo.a', 'foo', ['foo.a.other'], 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=2))),
+    ('foo.a', 'foo', ['bar', 'bar.baz.a', 'bar.foo.a.s'], 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=1))),
+    ('foo.a', 'foo', ['bar', 'bar.baz.a', 'bar.foo.a.s', 'foo.a.other'], 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=2)))
 ])
-def test_bridge_namespaces(from_namespace, to_namespace, name, expected):
+def test_bridge_namespaces(from_namespace, to_namespace, other_namespaces, name, expected):
     expected_name, expected_import = expected
 
-    str_node, actual_import = codegen.RewriteCrossReferenceStrings.bridge_namespaces(
+    namespaces = {ns: () for ns in other_namespaces + [from_namespace, to_namespace]}
+
+    rewriter = codegen.RewriteCrossReferenceStrings(namespaces=namespaces)
+
+    str_node, actual_import = rewriter.bridge_namespaces(
         from_namespace=from_namespace.split('.'),
         to_namespace=to_namespace.split('.'),
         target_name=name.split('.'),
