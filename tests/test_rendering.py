@@ -46,7 +46,9 @@ def test_example_message_round_trippable(data):
     example = imp.module_from_spec(spec)
     sys.modules['example'] = example
     spec.loader.exec_module(example)
-    original_example_avro_model = data.draw(st.from_type(example.ExampleAvroModel))
+    st.register_type_strategy(Decimal, st.decimals(allow_nan=False, allow_infinity=False, places=2))
+    strat = st.from_type(example.ExampleAvroModel)
+    original_example_avro_model = data.draw(strat)
     tmp_path.unlink()
 
     # clean up PBT-generated example model
@@ -67,7 +69,7 @@ def test_example_message_round_trippable(data):
         -9_223_372_036_854_775_808 <= original_example_avro_model.sampleInner.foo <= 9_223_372_036_854_775_808
     )  # 64-bit signed range also underspecified
     if isinstance(original_example_avro_model.sampleUnion, example.ExampleAvroModel.RecordWithInt):
-        assume(-2_147_483_648 <= original_example_avro_model.sampleUnion.value <= 2_147_483_647)
+        assume(-2_147_483_648 <= original_example_avro_model.sampleUnion.ivalue <= 2_147_483_647)
     original_example_avro_model = original_example_avro_model._replace(
         timestamp=datetime(2000, 1, 1, 0, 0, 0, 000000, tzinfo=avro.timezones.utc)
     )  # set this manually, since it's underspecified by the `datetime.datetime` type annotation

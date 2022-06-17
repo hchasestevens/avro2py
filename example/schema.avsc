@@ -708,7 +708,7 @@
                 }
               },
               {
-                "name": "value",
+                "name": "ivalue",
                 "type": "int"
               }
             ]
@@ -726,7 +726,7 @@
                 }
               },
               {
-                "name": "value",
+                "name": "svalue",
                 "type": "string"
               }
             ]
