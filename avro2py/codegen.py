@@ -393,9 +393,11 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
         remaining_to_components = [c for c in paired_remaining_to_components if c is not None]
 
         if remaining_from_components:
-            level = len(remaining_from_components)
-            if '.'.join(from_namespace) in namespaces_with_children:
-                level += 1
+            from_namespace_as_str = '.'.join(from_namespace)
+            if from_namespace_as_str in namespaces_with_children:
+                level = len(remaining_from_components) + 1
+            else:
+                level = len(remaining_from_components)
             import_node = ast.ImportFrom(
                 module='.'.join(remaining_to_components),
                 names=[ast.alias(name=target_name[0], asname=None)],
