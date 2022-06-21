@@ -356,7 +356,7 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
     def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
         super(RewriteCrossReferenceStrings, self).__init__(namespaces)
 
-        namespace_parts = [namespace.split(".") for namespace in namespaces.keys()]
+        namespace_parts = [namespace.split(".") for namespace in namespaces]
         namespaces_with_children = [
             ".".join(potential_parent)
             for potential_parent, potential_child in itertools.permutations(namespace_parts, 2)
