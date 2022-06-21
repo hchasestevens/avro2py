@@ -7,7 +7,7 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from textwrap import wrap
-from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
+from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict, FrozenSet
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -316,6 +316,21 @@ def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, En
     raise ValueError(f"Didn't know how to handle field type `{field_type}`")
 
 
+def namespace_is_parent_of(potential_parent: List[str], potential_child: List[str]) -> bool:
+    """Checks if one namespace is a parent of another.
+
+    A parent namespace is a namespace which is a prefix.
+
+    For example, `a.b` is a parent of `a.b.c.d`.
+    """
+    for parent_part, child_part in zip(potential_parent, potential_child):
+        if parent_part != child_part:
+            return False
+    if len(potential_parent) >= len(potential_child):
+        return False
+    return True
+
+
 class ModuleAwareNodeTransformer(ast.NodeTransformer):
     """Base class for NodeTransformers which need module/global context."""
     def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
@@ -338,8 +353,24 @@ class ModuleAwareNodeTransformer(ast.NodeTransformer):
 class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
     """Used to rewrite deferred type annotations within an AnnAssign node."""
 
-    def bridge_namespaces(self, from_namespace: List[str], to_namespace: List[str], target_name: List[str]) \
-            -> Tuple[ast.Str, Optional[ast.ImportFrom]]:
+    def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
+        super(RewriteCrossReferenceStrings, self).__init__(namespaces)
+
+        namespace_parts = [namespace.split(".") for namespace in namespaces.keys()]
+        namespaces_with_children = [
+            ".".join(potential_parent)
+            for potential_parent, potential_child in itertools.permutations(namespace_parts, 2)
+            if namespace_is_parent_of(potential_parent, potential_child)
+        ]
+        self.namespaces_with_children = frozenset(namespaces_with_children)
+
+    @staticmethod
+    def bridge_namespaces(
+        from_namespace: List[str],
+        to_namespace: List[str],
+        target_name: List[str],
+        namespaces_with_children: FrozenSet[str]
+    ) -> Tuple[ast.Str, Optional[ast.ImportFrom]]:
         """
         Given two module namespaces and a desired annotation, find the path to
         import the required object from its module.
@@ -363,15 +394,12 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
 
         if remaining_from_components:
             level = len(remaining_from_components)
-            for namespace_name in self.namespaces.keys():
-                namespace_parts = namespace_name.split('.')
-                if namespace_parts[0:len(from_namespace)] == from_namespace and len(namespace_parts) > len(from_namespace):
-                    level += 1
-                    break
+            if '.'.join(from_namespace) in namespaces_with_children:
+                level += 1
             import_node = ast.ImportFrom(
                 module='.'.join(remaining_to_components),
                 names=[ast.alias(name=target_name[0], asname=None)],
-                level=level
+                level=level,
             )
             name = ast.Str(s='.'.join(target_name))
         else:
@@ -397,6 +425,7 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
             from_namespace=self.module_namespace.split('.'),
             to_namespace=remaining_components,
             target_name=desired_name_components,
+            namespaces_with_children=self.namespaces_with_children
         )
         if possible_import is not None:
             self.module_imports.append(possible_import)
