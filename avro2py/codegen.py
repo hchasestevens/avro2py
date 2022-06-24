@@ -245,7 +245,7 @@ def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, En
         # http://avro.apache.org/docs/1.10.0/spec.html#Unions
         if len(field_type) == 2 and Primitives.NULL in field_type:
             # special case of 'optional'
-            _, nested_type = field_type
+            nested_type, = (t for t in field_type if t != Primitives.NULL)
             required_imports.append(from_typing('Optional'))
             return ast.Subscript(
                 value=ast.Name(id='Optional'),
