@@ -7,7 +7,7 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from textwrap import wrap
-from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict
+from typing import NamedTuple, List, Union, Generator, Tuple, Optional, Dict, FrozenSet
 
 from avro2py.avro_types import (
     Primitives, LogicalTypes, Record, AvroPrimitives, DefinedType, Enum, Array,
@@ -316,6 +316,18 @@ def resolve_field_type(field_type: Union[AvroPrimitives, DefinedType, Record, En
     raise ValueError(f"Didn't know how to handle field type `{field_type}`")
 
 
+def namespace_is_parent_of(potential_parent: List[str], potential_child: List[str]) -> bool:
+    """Checks if one namespace is a parent of another.
+
+    A parent namespace is a namespace which is a prefix.
+
+    For example, `a.b` is a parent of `a.b.c.d`.
+    """
+    if any(parent_part != child_part for parent_part, child_part in zip(potential_parent, potential_child)):
+        return False
+    return len(potential_parent) < len(potential_child)
+
+
 class ModuleAwareNodeTransformer(ast.NodeTransformer):
     """Base class for NodeTransformers which need module/global context."""
     def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
@@ -338,9 +350,24 @@ class ModuleAwareNodeTransformer(ast.NodeTransformer):
 class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
     """Used to rewrite deferred type annotations within an AnnAssign node."""
 
+    def __init__(self, namespaces: Dict[str, Tuple[ast.AST, List[Union[ast.Import, ast.ImportFrom]]]]):
+        super(RewriteCrossReferenceStrings, self).__init__(namespaces)
+
+        namespace_parts = [namespace.split(".") for namespace in namespaces]
+        namespaces_with_children = {
+            tuple(potential_parent)
+            for potential_parent, potential_child in itertools.permutations(namespace_parts, 2)
+            if namespace_is_parent_of(potential_parent, potential_child)
+        }
+        self.namespaces_with_children = frozenset(namespaces_with_children)
+
     @staticmethod
-    def bridge_namespaces(from_namespace: List[str], to_namespace: List[str], target_name: List[str]) \
-            -> Tuple[ast.Str, Optional[ast.ImportFrom]]:
+    def bridge_namespaces(
+        from_namespace: List[str],
+        to_namespace: List[str],
+        target_name: List[str],
+        namespaces_with_children: FrozenSet[str]
+    ) -> Tuple[ast.Str, Optional[ast.ImportFrom]]:
         """
         Given two module namespaces and a desired annotation, find the path to
         import the required object from its module.
@@ -363,10 +390,16 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
         remaining_to_components = [c for c in paired_remaining_to_components if c is not None]
 
         if remaining_from_components:
+            # If the from namespace has a child, it will be in `parent/from/__init__.py` instead of `parent/from.py`,
+            # so an import that would have been `.` now needs to be `..`, meaning we need to increase the level by one.
+            if tuple(from_namespace) in namespaces_with_children:
+                level = len(remaining_from_components) + 1
+            else:
+                level = len(remaining_from_components)
             import_node = ast.ImportFrom(
                 module='.'.join(remaining_to_components),
                 names=[ast.alias(name=target_name[0], asname=None)],
-                level=len(remaining_from_components)
+                level=level,
             )
             name = ast.Str(s='.'.join(target_name))
         else:
@@ -392,6 +425,7 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
             from_namespace=self.module_namespace.split('.'),
             to_namespace=remaining_components,
             target_name=desired_name_components,
+            namespaces_with_children=self.namespaces_with_children
         )
         if possible_import is not None:
             self.module_imports.append(possible_import)

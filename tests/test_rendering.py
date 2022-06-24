@@ -50,12 +50,20 @@ def test_example_message_round_trippable(data):
     tmp_path.unlink()
 
     # clean up PBT-generated example model
+    # we would like to focus on non-infinite, numeric decimals
+    # due to a bug in avro python implementation; exponent _must_ match scale
+    original_example_avro_model = original_example_avro_model._replace(
+        decimal=data.draw(st.decimals(allow_nan=False, allow_infinity=False, places=2))
+    )
+    if original_example_avro_model.maybeDecimal is not None:
+        original_example_avro_model = original_example_avro_model._replace(
+            maybeDecimal=data.draw(st.decimals(allow_nan=False, allow_infinity=False, places=2))
+        )
+
     def check_decimal(d: Optional[Decimal]):
         if d is None:
             return
-        assume(d.is_finite())
         assume(len(d.as_tuple().digits) < 21)  # if there are more digits than precision, round-tripping will truncate
-        assume(d.as_tuple().exponent == -2)  # bug in avro python implementation; exponent _must_ match scale
 
     check_decimal(original_example_avro_model.decimal)
     check_decimal(original_example_avro_model.maybeDecimal)
