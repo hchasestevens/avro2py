@@ -19,8 +19,8 @@ jobs:
       - run:
           name: Upload to pypi
           command: |
-            pyenv install 3.6.3
-            pyenv global 3.6.3
+            pyenv install 3.6.8
+            pyenv global 3.6.8
             pip install --upgrade pip
             pip install twine
             python setup.py sdist
