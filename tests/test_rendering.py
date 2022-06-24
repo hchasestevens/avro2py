@@ -55,7 +55,7 @@ def test_example_message_round_trippable(data):
     original_example_avro_model = original_example_avro_model._replace(
         decimal=data.draw(st.decimals(allow_nan=False, allow_infinity=False, places=2))
     )
-    if original_example_avro_model.maybeDecimal:
+    if original_example_avro_model.maybeDecimal is not None:
         original_example_avro_model = original_example_avro_model._replace(
             maybeDecimal=data.draw(st.decimals(allow_nan=False, allow_infinity=False, places=2))
         )

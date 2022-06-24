@@ -18,10 +18,10 @@ TEST_SCHEMAS = json.load((TEST_PATH / 'sample_schema.avsc').open('r'))
     ('marketprice.messages.nile.mws', 'marketprice.messages.nile.mws', frozenset(), 'GetMatchingProductForId.ImageData', ('GetMatchingProductForId.ImageData', None)),
     ('marketprice.messages.historical.replay', 'marketprice.pubsub', frozenset(), 'S3FileDescriptor', ('S3FileDescriptor', ast.ImportFrom(module='pubsub', names=[ast.alias(name='S3FileDescriptor', asname=None)], level=3))),
     ('marketprice.messages.targeting_recommendation_engine', 'marketprice.messages.targeting_recommendation_engine', frozenset(), 'TargetingRecommendation.Predicate', ('TargetingRecommendation.Predicate', None)),
-    ('foo.a', 'foo', frozenset(['foo.a']), 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=2))),
-    ('foo.a', 'foo', frozenset(['bar', 'bar.baz', 'bar.foo.a']), 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=1))),
-    ('foo.a', 'foo', frozenset(['bar', 'bar.baz', 'bar.foo.a', 'foo.a']), 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=2))),
-    ('bar', 'foo', frozenset(['foo.a']), 'Beta', ('Beta', ast.ImportFrom(module='foo', names=[ast.alias(name='Beta', asname=None)], level=1)))
+    ('foo.a', 'foo', frozenset([('foo', 'a')]), 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=2))),
+    ('foo.a', 'foo', frozenset([('bar',), ('bar', 'baz'), ('bar', 'foo', 'a')]), 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=1))),
+    ('foo.a', 'foo', frozenset([('bar',), ('bar', 'baz'), ('bar', 'foo', 'a'), ('foo', 'a')]), 'Beta', ('Beta', ast.ImportFrom(module='', names=[ast.alias(name='Beta', asname=None)], level=2))),
+    ('bar', 'foo', frozenset([('foo', 'a')]), 'Beta', ('Beta', ast.ImportFrom(module='foo', names=[ast.alias(name='Beta', asname=None)], level=1)))
 ])
 def test_bridge_namespaces(from_namespace, to_namespace, namespaces_with_children, name, expected):
     expected_name, expected_import = expected
@@ -59,9 +59,9 @@ def test_namespace_is_parent_of(potential_parent, potential_child, is_parent):
 
 
 @pytest.mark.parametrize('namespaces, namespaces_that_should_have_children', [
-    [['foo', 'foo.a', 'bar', 'foo.a.s', 'foo.s'], frozenset(['foo', 'foo.a'])],
+    [['foo', 'foo.a', 'bar', 'foo.a.s', 'foo.s'], frozenset([('foo',), ('foo', 'a')])],
     [['foo', 'bar'], frozenset([])],
-    [['foo.bar.baz', 'foo', 'foo.bar'], frozenset(['foo', 'foo.bar'])]
+    [['foo.bar.baz', 'foo', 'foo.bar'], frozenset([('foo',), ('foo', 'bar')])]
 ])
 def test_generates_all_parent_namespaces(namespaces, namespaces_that_should_have_children):
     namespaces_as_dict = {namespace: () for namespace in namespaces}

@@ -323,12 +323,9 @@ def namespace_is_parent_of(potential_parent: List[str], potential_child: List[st
 
     For example, `a.b` is a parent of `a.b.c.d`.
     """
-    for parent_part, child_part in zip(potential_parent, potential_child):
-        if parent_part != child_part:
-            return False
-    if len(potential_parent) >= len(potential_child):
+    if any(parent_part != child_part for parent_part, child_part in zip(potential_parent, potential_child)):
         return False
-    return True
+    return len(potential_parent) < len(potential_child)
 
 
 class ModuleAwareNodeTransformer(ast.NodeTransformer):
@@ -357,11 +354,11 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
         super(RewriteCrossReferenceStrings, self).__init__(namespaces)
 
         namespace_parts = [namespace.split(".") for namespace in namespaces]
-        namespaces_with_children = [
-            ".".join(potential_parent)
+        namespaces_with_children = {
+            tuple(potential_parent)
             for potential_parent, potential_child in itertools.permutations(namespace_parts, 2)
             if namespace_is_parent_of(potential_parent, potential_child)
-        ]
+        }
         self.namespaces_with_children = frozenset(namespaces_with_children)
 
     @staticmethod
@@ -393,8 +390,9 @@ class RewriteCrossReferenceStrings(ModuleAwareNodeTransformer):
         remaining_to_components = [c for c in paired_remaining_to_components if c is not None]
 
         if remaining_from_components:
-            from_namespace_as_str = '.'.join(from_namespace)
-            if from_namespace_as_str in namespaces_with_children:
+            # If the from namespace has a child, it will be in `parent/from/__init__.py` instead of `parent/from.py`,
+            # so an import that would have been `.` now needs to be `..`, meaning we need to increase the level by one.
+            if tuple(from_namespace) in namespaces_with_children:
                 level = len(remaining_from_components) + 1
             else:
                 level = len(remaining_from_components)
